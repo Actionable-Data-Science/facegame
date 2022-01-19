@@ -2,8 +2,12 @@
 
 const hostname = "localhost"
 
-const canvasImage = document.getElementById('canvas-image');
-const ctxCanvasImage = canvasImage.getContext('2d');
+const canvasImage = document.getElementById("canvas-image");
+const ctxCanvasImage = canvasImage.getContext("2d");
+
+const canvasSnapshot = document.getElementById("canvas-snapshot");
+const ctxCanvasSnapshot = canvasSnapshot.getContext("2d");
+
 
 const video = document.getElementById("video-input");
 
@@ -18,16 +22,24 @@ function main(){
     startNewGame();
 }
 
-async function game(){
+async function startRound(){
     isRunning = true;
     const randomImage = await requestRandomImage();
-    setNewImage(`faces/${randomImage.imageName}`)
+    setNewImage(`faces/${randomImage.imageName}`);
     countdown(3);
+    setTimeout(finishRound, 3000);
+}
+
+async function finishRound(){
+    ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
+    const snapshot = canvasSnapshot.toDataURL("image/png");
+    const actionUnitData = await requestActionUnits({base64image: snapshot});
+    console.log(actionUnitData);
 }
 
 function startNewGame(){
     if (isRunning === false){
-        game();
+        startRound();
     }
 }
 
@@ -44,9 +56,7 @@ function countdown(seconds){
             seconds -= 1;
             setTimeout(tick, 1000);
         }
-        
     }
-
     setTimeout(tick, 1000)
 }
 
@@ -59,11 +69,21 @@ function setNewImage(imagePath){
 }
 
 async function requestRandomImage(){
-    let res = await fetch("/api/getRandomImage");
+    const apiURL = "/api/getRandomImage"
+    let res = await fetch(apiURL, {method: "GET"});
     let json = await res.json();
     return json;
 }
 
+async function requestActionUnits(image){
+  const apiURL = "/api/getActionUnits";
+  const data = {"image": image}
+  console.log(data);
+  let res = await fetch(apiURL, {method: "post", mode: 'cors',
+  headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+  let json = await res.json();
+  return json;
+}
 
 
 /**
