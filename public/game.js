@@ -25,6 +25,7 @@ function main(){
 async function startRound(){
     isRunning = true;
     const randomImage = await requestRandomImage();
+    console.log(randomImage);
     setNewImage(`faces/${randomImage.imageName}`);
     countdown(3);
     setTimeout(finishRound, 3000);
@@ -34,7 +35,7 @@ async function finishRound(){
     ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
     const snapshot = canvasSnapshot.toDataURL("image/png");
     const actionUnitData = await requestActionUnits({base64image: snapshot});
-    console.log(actionUnitData);
+    // console.log(actionUnitData);
 }
 
 function startNewGame(){
@@ -120,6 +121,8 @@ async function requestActionUnits(image){
           console.error(error);
         });
     });
+
+    cameraSelectBox.click() // to start webcam automatically
   
   function gotDevices(mediaDevices) {
     const cameraSelectBox = document.getElementById("camera-select-box");
@@ -144,3 +147,5 @@ async function requestActionUnits(image){
     });
   }
  }
+
+ 

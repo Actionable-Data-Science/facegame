@@ -27,8 +27,7 @@ app.get("/api/getRandomImage", (req, res) => {
 
 app.post("/api/getActionUnits", (req, res) => {
     const image = req.body.image.base64image;
-    const actionUnits = api.getActionUnits(image)
-    res.send(JSON.stringify({au: actionUnits}))
+    const actionUnits = api.getActionUnits(image, res)
 });
 
 app.post("/api/uploadData", (req, res) => {

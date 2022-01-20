@@ -2,13 +2,17 @@
 
 const path = require('path');
 const fs = require('fs');
-const {spawn} = require('child_process')
+const {spawn} = require('child_process');
+const { join } = require('path/posix');
+const fileExists = require('file-exists-promise');
 
 const imagePath = path.join(__dirname, '../public/faces');
 
+const auData = require(path.join(__dirname, '../public/faces/au_data.json'));
+
 function getRandomImage(){
     const imageName = getRandomImageName();
-    const actionUnits = getActionUnits(imageName);
+    const actionUnits = lookupActionUnits(imageName);
     return {imageName: imageName, actionUnits: actionUnits};
 };
 
@@ -20,28 +24,42 @@ function getRandomImageName(){
     return imageName
 }
 
-function getActionUnits(image){
+function getActionUnits(image, res){
     const data = image.replace(/^data:image\/png;base64,/, "");
     const time = new Date().getTime();
-    fs.writeFile(`./participant-images/${time}.png`, data, "base64", function(err){
-        console.log(err);
+    fs.writeFile(path.join(__dirname, `../participant-images/${time}.png`), data, "base64", function(err){
+        // console.log(err);
     });
-    calculateActionUnits(`./participant-images/${time}.png`)
+    
+    const imagePath = path.join(__dirname, `/participant-images/${time}.png`);
 
-    // From here, run action unit detection on the picture, return the results
-
-    const actionUnits = [1, 2, 4];
-    return actionUnits
+    ls  = spawn(`${path.join(__dirname, "../src/au_detection/env/bin/python")}`, 
+        ['-u', `${path.join(__dirname, "../src/au_detection/main.py")}`, 
+        imagePath]);
+            
+    ls.stdout.on('data', function (data) {
+        actionUnitsString = data.toString();
+        const actionUnits = [];
+        actionUnitsString.split(" ").forEach((actionUnit) => {
+            actionUnits.push(parseInt(actionUnit));
+        });
+        if (!res.headersSent){
+            res.send(JSON.stringify({au: actionUnits}));
+            console.log("AUs:", actionUnits);
+        }
+    });
+            
+    ls.stderr.on('data', function (data) {
+        console.log('stderr: ' + data.toString());
+    });
+            
+    ls.on('exit', function (code) {
+        // console.log('child process exited with code ' + code.toString());
+    });    
 }
-
-function calculateActionUnits(imagePath){
-    var process = spawn('python', [
-       "-u",
-       path.join(__dirname, 'main.py'), 
-       imagePath]);
-    process.stdout.on('data', function(data) {
-        console.log(data.toString());
-    });
+    
+function lookupActionUnits(imageName){
+    return auData[imageName];
 }
 
 module.exports = {
