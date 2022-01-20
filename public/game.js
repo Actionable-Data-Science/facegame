@@ -23,18 +23,25 @@ function main(){
 }
 
 async function startRound(){
+    document.getElementById("timer").style.display = "block";
+    hideScores();
+    showLiveVideo();
     isRunning = true;
     const randomImage = await requestRandomImage();
+    document.getElementById("correct-aus").innerHTML = "Our picture: " + randomImage.actionUnits;
     console.log(randomImage);
     setNewImage(`faces/${randomImage.imageName}`);
     countdown(3);
-    setTimeout(finishRound, 3000);
 }
 
 async function finishRound(){
+    showSnapshot();
     ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
     const snapshot = canvasSnapshot.toDataURL("image/png");
-    const actionUnitData = await requestActionUnits({base64image: snapshot});
+    const actionUnitData = requestActionUnits({base64image: snapshot});
+    actionUnitData.then(auData => {
+      showScores(auData);
+    })
     // console.log(actionUnitData);
 }
 
@@ -49,9 +56,11 @@ function countdown(seconds){
     const timerElem = document.getElementById("timer");
 
     function tick(){
-        if (seconds < 1){
-            timerElem.innerHTML = "SNAP!";
+        if (seconds == 0){
+            timerElem.innerHTML = "Evaluating Action Units...";
             isRunning = false;
+            finishRound();
+
         } else{
             timerElem.innerHTML = seconds;
             seconds -= 1;
@@ -67,6 +76,29 @@ function setNewImage(imagePath){
     img.onload = () => {
         ctxCanvasImage.drawImage(img, 0, 0, canvasImage.width, canvasImage.height);
     }
+}
+
+function showLiveVideo(){
+  document.getElementById("canvas-snapshot").style.display = "none";
+  document.getElementById("video-input").style.display = "inline-block";
+}
+
+function showSnapshot(){
+  document.getElementById("canvas-snapshot").style.display = "inline-block";
+  document.getElementById("video-input").style.display = "none";
+}
+
+function showScores(auData){
+  document.getElementById("timer").style.display = "none";
+  document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
+  document.getElementById("your-aus").style.display = "block";
+  document.getElementById("correct-aus").style.display = "block"; 
+}
+
+function hideScores(){
+  document.getElementById("status").style.display = "none";
+  document.getElementById("correct-aus").style.display = "none";
+  document.getElementById("your-aus").style.display = "none";
 }
 
 async function requestRandomImage(){

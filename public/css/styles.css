@@ -1,3 +1,16 @@
 h1{
     text-align: center;
 }
+
+#your-scores{
+    color: blue;
+}
+
+#correct-scores{
+    color: green;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+}

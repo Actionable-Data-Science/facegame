@@ -44,7 +44,7 @@ function getActionUnits(image, res){
             actionUnits.push(parseInt(actionUnit));
         });
         if (!res.headersSent){
-            res.send(JSON.stringify({au: actionUnits}));
+            res.send(JSON.stringify({"actionUnits": actionUnits}));
             console.log("AUs:", actionUnits);
         }
     });

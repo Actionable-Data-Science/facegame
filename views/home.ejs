@@ -2,19 +2,28 @@
 
 <h1>Game of Faces</h1>
 
-<canvas id="canvas-image" width="480px" height="360px"></canvas>
-<canvas id="canvas-snapshot" width="480px" height="360px"></canvas>
-<video id="video-input" autoplay playsinline width="480px" height="360px"></video>
-<!-- <canvas id="canvas-camera" width="400px" height="360px"></canvas> -->
+<div class="centered">
+    <canvas id="canvas-image" width="480px" height="360px"></canvas>
+    <canvas id="canvas-snapshot" width="480px" height="360px"></canvas>
+    <video id="video-input" autoplay playsinline width="480px" height="360px"></video>
+</div>
 
-<img id="mypic" src="" alt="">
+<h1 id="timer"></h1>
+<h1 id="status">Evaluating AUs...</h1>
+<h1 id="correct-aus"></h1>
+<h1 id="your-aus"></h1>
 
-<select id="camera-select-box" name="camera_select_box">
-    <option value="" disabled selected></option>
-</select>
+<div class="centered">
+    <select id="camera-select-box" name="camera_select_box">
+        <option value="" disabled selected></option>
+    </select>
+    <button id="new-game-btn" type="button">New Game</button>
+</div>
 
-<button id="new-game-btn" type="button">New Game</button>
 
-<h2 id="timer"></h2>
+
+
+
+
 
 <script type="text/javascript" src="/game.js" charset="utf-8"></script>
