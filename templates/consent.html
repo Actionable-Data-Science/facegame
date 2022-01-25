@@ -1,0 +1,28 @@
+<link rel="stylesheet" href={{ url_for('static', filename='styles.css')}}>
+
+<h1>Game of Faces</h1>
+
+<h3>Welcome to the game of faces!</h3>
+<p>
+    In this game, your task is to mimic the shown picture
+    as closely as possible. Once the timer reaches zero,
+    your image is transferred to the server for evaluation.
+
+    Please click the "consent" button to confirm that you have understood
+    this and that you agree.
+
+    We store this information in a cookie so that you don't need to do this again.
+
+</p>
+
+<button onclick="storeConsentCookie()">Consent</button>
+
+
+<script>
+    function storeConsentCookie(){
+        document.cookie = "facegameconsent=True";
+        console.log("Consent given - cookie set");
+        window.location.replace("/");
+    }
+
+</script>
