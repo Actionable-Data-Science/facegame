@@ -15,6 +15,7 @@ from skimage.feature import hog
 from base64 import b64decode
 
 def calculate_action_units(base64image): 
+
     # print(f"Calculating action units for {path_to_image}")
 
     def readb64(uri):
