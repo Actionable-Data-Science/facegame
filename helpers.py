@@ -2,17 +2,23 @@ import os
 import sys
 import json
 import base64
+import ast
+import au_detection
 from random import choice
 from pathlib import Path
 from flask import jsonify
-from audetection.au_detection import calculate_action_units
+from database import add_gold_image
+from dotenv import load_dotenv
 
-# TODO: Make this a environment variable
-FACES_PATH = "static/faces/"
+load_dotenv()
 
-manual_image_aus_json_str = open("static/faces/manual_au_data.json").read()
+
+FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
+USERS = ast.literal_eval(os.environ["USERS"]) 
+
+manual_image_aus_json_str = open("./static/faces/manual_au_data.json").read()
 manual_image_aus = json.loads(manual_image_aus_json_str)
-automatic_image_aus_json_str = open("static/faces/automatic_au_data.json").read()
+automatic_image_aus_json_str = open("./static/faces/automatic_au_data.json").read()
 automatic_image_aus = json.loads(automatic_image_aus_json_str)
 
 def get_random_filename(file_ext, folder):
@@ -26,19 +32,21 @@ def get_random_image():
     elif random_filename in automatic_image_aus:
         random_image_aus = automatic_image_aus[random_filename]
     else:
-        random_image_base64 = "," + image_to_base64(random_filename)
-        automatic_image_aus[random_filename] = calculate_action_units(random_image_base64)
+        automatic_image_aus[random_filename] = au_detection.calculate_action_units_from_image_url(random_filename)
         random_image_aus = automatic_image_aus[random_filename]
         save_automatic_aus()
     return random_filename, random_image_aus
 
-def image_to_base64(filename):
-    with open(FACES_PATH + filename, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode('utf-8')
+def check_admin_credentials(user, password):
+    print("Users:", USERS)
+    if [user, password] in USERS:
+        return True
+    else:
+        return False
+
+def generate_data(path_to_image):
+    add_gold_image(path_to_image)
 
 def save_automatic_aus():
     with open("static/faces/automatic_au_data.json", "w") as json_file:
         json.dump(automatic_image_aus, json_file)
-
-
-get_random_image()

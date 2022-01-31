@@ -13,23 +13,26 @@ from scipy.spatial import ConvexHull
 from skimage.morphology.convex_hull import grid_points_in_poly
 from skimage.feature import hog
 from base64 import b64decode
+from dotenv import load_dotenv
+
+load_dotenv()
+
+FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 
 def calculate_action_units_from_image_url(image_url):
-    return [1]
+    complete_image_path = os.path.join(FACES_FOLDER_PATH, image_url)
 
-def calculate_action_units(base64image): 
+    return calculate_action_units(cv2.imread(complete_image_path))
 
-    # print(f"Calculating action units for {path_to_image}")
-
+def calculate_action_units_from_base_64_image(base64image):
     def readb64(uri):
         encoded_data = uri.split(',')[1]
         nparr = np.fromstring(b64decode(encoded_data), np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         return img
+    return calculate_action_units(readb64(base64image))
 
-    image = readb64(base64image)
-
-    # image = cv2.imread(img)
+def calculate_action_units(image): 
 
     predictor = dlib.shape_predictor("./resources/shape_predictor_68_face_landmarks.dat")
     pca_model = joblib.load("./resources/hog_pca_all_emotio.joblib")
@@ -37,8 +40,6 @@ def calculate_action_units(base64image):
     scaler = joblib.load("./resources/hog_scalar_aus.joblib")
 
     # Helper Functions
-
-    
 
     def shape_to_np(shape, dtype="int"):
         coords = np.zeros((68, 2), dtype=dtype)

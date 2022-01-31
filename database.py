@@ -1,10 +1,10 @@
 import sqlite3
-from audetection.au_detection import calculate_action_units_from_image_url
+from au_detection import calculate_action_units_from_image_url
 from datetime import datetime
 
 AU_MODEL_ID = "1" # make this an environment variable
 
-connection = sqlite3.connect("database/facegame.db")
+connection = sqlite3.connect("database/facegame.db", check_same_thread=False)
 cursor = connection.cursor()
 
 def create_tables_if_not_exist():
