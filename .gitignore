@@ -12,3 +12,4 @@ src/__pycache__/
 *.dat
 .commit_message
 *.jpg
+*.db

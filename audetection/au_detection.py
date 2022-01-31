@@ -14,6 +14,9 @@ from skimage.morphology.convex_hull import grid_points_in_poly
 from skimage.feature import hog
 from base64 import b64decode
 
+def calculate_action_units_from_image_url(image_url):
+    return [1]
+
 def calculate_action_units(base64image): 
 
     # print(f"Calculating action units for {path_to_image}")

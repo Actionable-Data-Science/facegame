@@ -46,7 +46,8 @@ async function finishRound(){
 
 function startNewGame(){
     if (isRunning === false){
-        startRound();
+      document.getElementById("timer").innerHTML = "Loading new image...";
+      startRound();
     }
 }
 
