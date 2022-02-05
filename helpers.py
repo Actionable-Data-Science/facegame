@@ -50,3 +50,4 @@ def generate_data(path_to_image):
 def save_automatic_aus():
     with open("static/faces/automatic_au_data.json", "w") as json_file:
         json.dump(automatic_image_aus, json_file)
+

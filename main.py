@@ -1,5 +1,6 @@
 from flask import Flask, request, send_from_directory, render_template, redirect, jsonify, url_for
 from au_detection import calculate_action_units_from_base_64_image
+from database import get_random_image_data
 from base64 import b64encode, b64decode
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -20,7 +21,7 @@ FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 
 @app.route('/')
 def send_home():
-    if request.cookies and request.cookies["facegameconsent"] == "True":
+    if request.cookies and request.cookies.get("facegameconsent") == "True":
         return redirect(url_for("send_game"))
     else:
         return redirect(url_for("send_consent"))
@@ -42,8 +43,9 @@ def send_admin():
 
 @app.route('/api/getRandomImage', methods=["GET"])
 def get_random_image():
-    random_filename, random_image_aus = helpers.get_random_image()
-    return jsonify(imageName= random_filename, actionUnits= random_image_aus)
+    random_image_data = get_random_image_data()
+    random_image_id, random_filename, random_image_aus = random_image_data[0], random_image_data[1].split("/")[-1], random_image_data[2]
+    return jsonify(imageId=random_image_id, imageName= random_filename, actionUnits= random_image_aus)
 
 @app.route('/api/getActionUnits', methods=["POST"])
 def get_action_units():
@@ -66,5 +68,3 @@ def upload_image():
 
 if __name__ == "__main__":
     app.run()
-
-#rint(calculate_action_units("./bg_0_neutral.jpg"))

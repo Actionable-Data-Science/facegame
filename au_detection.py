@@ -20,9 +20,7 @@ load_dotenv()
 FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 
 def calculate_action_units_from_image_url(image_url):
-    complete_image_path = os.path.join(FACES_FOLDER_PATH, image_url)
-
-    return calculate_action_units(cv2.imread(complete_image_path))
+    return calculate_action_units(cv2.imread(image_url))
 
 def calculate_action_units_from_base_64_image(base64image):
     def readb64(uri):

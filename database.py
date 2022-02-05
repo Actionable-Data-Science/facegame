@@ -69,6 +69,21 @@ def add_gameplay(gold_id, session_id, image_url,
     connection.commit()
     return cursor.lastrowid
 
+def get_random_image_data():
+    sql_command = """
+      SELECT * FROM TBL_IMAGES_GOLD ORDER BY RANDOM() LIMIT 1
+    """
+    cursor.execute(sql_command)
+    row = cursor.fetchall()[0]
+    connection.commit()
+    gold_id, random_filename, gold_action_units = row[0], row[1], row[2]
+    return gold_id, random_filename, gold_action_units
+
+
+def check_all_images_present():
+    pass
+    # at server start, check if all images that are in the database are present to prevent crashes
+
 
 create_tables_if_not_exist()
 

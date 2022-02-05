@@ -6,30 +6,36 @@ const canvasSnapshot = document.getElementById("canvas-snapshot");
 const ctxCanvasSnapshot = canvasSnapshot.getContext("2d");
 const video = document.getElementById("video-input");
 
+var currentImageId = 0;
+var currentRandomImage;
+
 let pictureAUs = [];
 
 document.getElementById("new-game-btn").addEventListener("click", startNewGame);
+document.getElementById("retry-btn").addEventListener("click", retryGame);
 
 let isRunning = false;
 
 main();
 
 function main(){
-
     startWebcam();
-    startNewGame();
+    getImageThenStart();
 }
 
+
+async function getImageThenStart(){
+  currentRandomImage = await requestRandomImage();
+  startRound();
+}
+
+
 async function startRound(){
+    isRunning = true;
     document.getElementById("timer").style.display = "block";
     hideScores();
     showLiveVideo();
-    isRunning = true;
-    const randomImage = await requestRandomImage();
-    document.getElementById("correct-aus").innerHTML = "Our picture: " + randomImage.actionUnits;
-    pictureAUs = randomImage.actionUnits;
-    console.log(randomImage);
-    setNewImage(`static/faces/${randomImage.imageName}`);
+    setNewImage(`static/faces/${currentRandomImage.imageName}`);
     countdown(5);
 }
 
@@ -41,26 +47,25 @@ async function finishRound(){
     actionUnitData.then(auData => {
       showScores(auData);
     })
-    // console.log(actionUnitData);
+    generateStatus(snapshot).then(statusVector => {
+      // TODO: send to server
+    });
 }
 
 function startNewGame(){
     if (isRunning === false){
       document.getElementById("timer").innerHTML = "Loading new image...";
-      startRound();
+      getImageThenStart();
     }
 }
 
 function countdown(seconds){
-
     const timerElem = document.getElementById("timer");
-
     function tick(){
         if (seconds == 0){
             timerElem.innerHTML = "Evaluating Action Units...";
             isRunning = false;
             finishRound();
-
         } else{
             timerElem.innerHTML = seconds;
             seconds -= 1;
@@ -89,12 +94,14 @@ function showSnapshot(){
 }
 
 function showScores(auData){
+  document.getElementById("correct-aus").innerHTML = "Our picture: " + currentRandomImage.actionUnits;
+  document.getElementById("correct-aus").style.display = "block"; 
   document.getElementById("timer").style.display = "none";
   document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
   document.getElementById("your-aus").style.display = "block";
-  document.getElementById("correct-aus").style.display = "block"; 
-  document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(jaccard(pictureAUs, auData.actionUnits) * 100) + "%";
+  document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(jaccard(currentRandomImage.actionUnits, auData.actionUnits) * 100) + "%";
   document.getElementById("jaccard-score").style.display = "block";
+  document.getElementById("retry-btn").style.display = "inline-block";
 }
 
 function jaccard(auSet1, auSet2){
@@ -103,6 +110,11 @@ function jaccard(auSet1, auSet2){
   const score = intersectionAUList.length / allAUs.length;
   return score;
 }
+
+function retryGame(){
+  startRound();
+}
+
 
 function mergeAndDeduplicate(arr1, arr2){
   var mergedAndDeduplicated = []
@@ -162,7 +174,6 @@ async function requestActionUnits(image){
         video: videoConstraints,
         audio: false
       };
-  
       navigator.mediaDevices
         .getUserMedia(constraints)
         .then(stream => {
@@ -175,7 +186,6 @@ async function requestActionUnits(image){
           console.error(error);
         });
     });
-
     cameraSelectBox.click() // to start webcam automatically
   
   function gotDevices(mediaDevices) {
