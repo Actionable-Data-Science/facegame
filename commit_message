@@ -1,1 +1,1 @@
-Make database fully functional, add web-based processing of landmarks, hogs, emotion, age and gender, add help.txt with instructions, add attributions page
+Add functionality to upload multiple images at once in admin panel, add link to attributions, add table and api for sessions

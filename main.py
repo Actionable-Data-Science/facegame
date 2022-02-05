@@ -1,6 +1,6 @@
 from flask import Flask, request, send_from_directory, render_template, redirect, jsonify, url_for
 from au_detection import calculate_action_units_from_base_64_image
-from database import get_random_image_data, add_gameplay, update_gameplay_image_and_offline_aus, update_gameplay_online_results
+from database import get_random_image_data, add_gameplay, add_session, update_gameplay_image_and_offline_aus, update_gameplay_online_results
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from base64 import urlsafe_b64decode
@@ -55,6 +55,11 @@ def get_gameplay_data():
     gameplay_id = add_gameplay(random_image_id)
     return jsonify(imageId=random_image_id, imageName= random_filename, actionUnits= random_image_aus, gameplayId = gameplay_id)
 
+@app.route('/api/getSessionId', methods=["GET"])
+def get_session_id():
+    session_id = add_session("1.1.1.1")
+    return jsonify(sessionId= session_id)
+
 @app.route('/api/getActionUnits', methods=["POST"])
 def get_action_units():
     req = request.json
@@ -77,19 +82,19 @@ def upload_online_results():
     status_vector["age"], status_vector["emotions"])
     return "Success"
 
-
 @app.route('/api/uploadImage', methods=["POST"])
 def upload_image():
     user = request.form.get('user')
     password = request.form.get('pass')
     if helpers.check_admin_credentials(user, password):
-        imagefile = request.files['imagefile']
-        imagepath = os.path.join(FACES_FOLDER_PATH, secure_filename(imagefile.filename))
-        imagefile.save(imagepath)
-        helpers.generate_data(imagepath)
+        imagefiles = request.files.getlist("imagefiles")
+        for imagefile in imagefiles:
+            imagepath = os.path.join(FACES_FOLDER_PATH, secure_filename(imagefile.filename))
+            imagefile.save(imagepath)
+            helpers.generate_data(imagepath)
         return "Success!"
     else:
-        return "Error!"
+        return "Wrong user credentials"
 
 if __name__ == "__main__":
     app.run()

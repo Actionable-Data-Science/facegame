@@ -43,6 +43,15 @@ def create_tables_if_not_exist():
     );"""
     cursor.execute(sql_command)
 
+    sql_command = """
+    CREATE TABLE IF NOT EXISTS TBL_SESSION (
+    session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ip_address VARCHAR(50),
+    date DATE
+    )
+    """
+    cursor.execute(sql_command)
+
 def add_gold_image(image_url):
     sql_command = """
     INSERT INTO TBL_IMAGES_GOLD (image_url, au_list_predicted, au_model_id, date) 
@@ -61,6 +70,17 @@ def add_gameplay(gold_id):
     """
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
     new_data = (gold_id, time)
+    cursor.execute(sql_command, new_data)
+    connection.commit()
+    return cursor.lastrowid
+
+def add_session(ip_address):
+    sql_command = """
+    INSERT INTO TBL_SESSION (ip_address, date)
+    VALUES (?, ?);
+    """
+    time = datetime.now().strftime("%B %d, %Y %I:%M%p")
+    new_data = (ip_address, time)
     cursor.execute(sql_command, new_data)
     connection.commit()
     return cursor.lastrowid
