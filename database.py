@@ -1,8 +1,12 @@
 import sqlite3
+import os
 from au_detection import calculate_action_units_from_image_url
 from datetime import datetime
+from dotenv import load_dotenv
 
-AU_MODEL_ID = "1" # make this an environment variable
+load_dotenv()
+
+AU_MODEL_ID = os.environ["AU_MODEL_ID"]
 
 connection = sqlite3.connect("database/facegame.db", check_same_thread=False)
 cursor = connection.cursor()
@@ -32,6 +36,7 @@ def create_tables_if_not_exist():
   	hog_values_list_predicted VARCHAR(38000),
   	gender_predicted CHAR(1),
   	age_predicted INTEGER,
+    emotions_predicted VARCHAR(200),
   	au_model_id VARCHAR(10),
     date DATE,
     FOREIGN KEY (gold_id) REFERENCES TBL_IMAGES_GOLD (gold_id)
@@ -49,25 +54,44 @@ def add_gold_image(image_url):
     connection.commit()
     return cursor.lastrowid
 
-def add_gameplay(gold_id, session_id, image_url, 
-    au_list_predicted, face_landmark_list_predicted, 
-    hog_values_list_predicted, gender_predicted,
-    age_predicted):
-    sql_command = """
-    INSERT INTO TBL_GAMEPLAY (gold_id, session_id, image_url, 
-        au_list_predicted, face_landmark_list_predicted, 
-        hog_values_list_predicted, gender_predicted, age_predicted,
-        au_model_id, date) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+def add_gameplay(gold_id):
+    sql_command = """ 
+    INSERT INTO TBL_GAMEPLAY (gold_id, date) 
+    VALUES (?, ?);
     """
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
-    new_gameplay = (gold_id, session_id, image_url, 
-        str(au_list_predicted), str(face_landmark_list_predicted),
-        str(hog_values_list_predicted), gender_predicted,
-        age_predicted, AU_MODEL_ID, time)
-    cursor.execute(sql_command, new_gameplay)
+    new_data = (gold_id, time)
+    cursor.execute(sql_command, new_data)
     connection.commit()
     return cursor.lastrowid
+
+# secure this with a secret key / ip adress etc. so that attackers can't change database
+def update_gameplay_image_and_offline_aus(gameplay_id, image_url, au_list_predicted):
+    sql_command = """
+    UPDATE TBL_GAMEPLAY SET
+    image_url=?, au_list_predicted=?, au_model_id=?
+    WHERE gameplay_id = ?
+    """
+    update_data = (image_url, str(au_list_predicted), AU_MODEL_ID, gameplay_id)
+    cursor.execute(sql_command, update_data)
+    connection.commit()
+    return gameplay_id
+
+# secure this with a secret key / ip adress etc. so that attackers can't change database
+def update_gameplay_online_results(gameplay_id, face_landmark_list_predicted, 
+    hog_values_list_predicted, gender_predicted,
+    age_predicted, emotions_predicted):
+    sql_command = """
+    UPDATE TBL_GAMEPLAY SET
+    face_landmark_list_predicted=?, hog_values_list_predicted=?, 
+    gender_predicted=?, age_predicted=?, emotions_predicted=?
+    WHERE gameplay_id = ?
+    """
+    update_data = (str(face_landmark_list_predicted), str(hog_values_list_predicted), gender_predicted,
+                  age_predicted, str(emotions_predicted), gameplay_id)
+    cursor.execute(sql_command, update_data)
+    connection.commit()
+    return gameplay_id
 
 def get_random_image_data():
     sql_command = """
@@ -79,11 +103,9 @@ def get_random_image_data():
     gold_id, random_filename, gold_action_units = row[0], row[1], row[2]
     return gold_id, random_filename, gold_action_units
 
-
 def check_all_images_present():
     pass
     # at server start, check if all images that are in the database are present to prevent crashes
 
 
 create_tables_if_not_exist()
-

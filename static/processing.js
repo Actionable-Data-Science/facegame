@@ -5,41 +5,39 @@ async function loadModels(){
     await faceapi.nets.faceLandmark68Net.loadFromUri('/static/models/');
     await faceapi.nets.ssdMobilenetv1.loadFromUri('/static/models/');
     await faceapi.nets.faceExpressionNet.loadFromUri('/static/models/');
+    await faceapi.nets.ageGenderNet.loadFromUri('/static/models/');
 }
 
-async function generateStatus(img){
-
+async function generateStatus(img, gameplayId){
     let statusVector = {
-        emotions: "not detected", // emotion
+        emotions: "", // emotion
         landmarks: [], // list of lists of length 2 of length 68
         hogs: [], // list of 5408 
+        gender: "",
+        age: "",
         error: ""
     };
-
     var image = document.createElement('img');
     image.src = img;
-
     image.onload = async () => {
-        console.log(image);
-
-        document.body.append(image);
-
         const displaySize = {width: image.width, height: image.height};
-        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions(); 
+        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withAgeAndGender(); 
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
         const det = resizedDetections.detection._box;
-
         if (checkFullFaceInPicture(det._x, det._y, det._width, det._height, image.width, image.height)) {
             const resizedLandmarks = resizeLandmarks(resizedDetections.landmarks._positions, det);
             statusVector.landmarks = rotateLandmarks(resizedLandmarks, resizedDetections.angle.roll);
             statusVector.emotions = resizedDetections.expressions;
             const maskedFace = await maskFace(statusVector.landmarks, image);
             statusVector.hogs = await getHogs(maskedFace);
+            statusVector.gender = `${resizedDetections.gender} (${resizedDetections.genderProbability.toFixed(2)})`;
+            statusVector.age = `${resizedDetections.age.toFixed(2)}`;
         } else {
             statusVector.error = "face not fully in picture";
-        }  
+        }      
+        sendStatusVector(statusVector, gameplayId); 
+        console.log("Status sent to server!");
     }
-        return statusVector;  
 }
 
 function resizeLandmarks(landmarks,  det) {

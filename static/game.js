@@ -6,8 +6,7 @@ const canvasSnapshot = document.getElementById("canvas-snapshot");
 const ctxCanvasSnapshot = canvasSnapshot.getContext("2d");
 const video = document.getElementById("video-input");
 
-var currentImageId = 0;
-var currentRandomImage;
+let currentGameplayData;
 
 let pictureAUs = [];
 
@@ -25,7 +24,7 @@ function main(){
 
 
 async function getImageThenStart(){
-  currentRandomImage = await requestRandomImage();
+  currentGameplayData = await getGameplayData();
   startRound();
 }
 
@@ -35,7 +34,7 @@ async function startRound(){
     document.getElementById("timer").style.display = "block";
     hideScores();
     showLiveVideo();
-    setNewImage(`static/faces/${currentRandomImage.imageName}`);
+    setNewImage(`static/faces/${currentGameplayData.imageName}`);
     countdown(5);
 }
 
@@ -43,14 +42,14 @@ async function finishRound(){
     showSnapshot();
     ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
     const snapshot = canvasSnapshot.toDataURL("image/png");
-    const actionUnitData = requestActionUnits({base64image: snapshot});
+    console.log("Current Gameplay ID:", currentGameplayData.gameplayId);
+    const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId);
     actionUnitData.then(auData => {
       showScores(auData);
-    })
-    generateStatus(snapshot).then(statusVector => {
-      // TODO: send to server
     });
+    generateStatus(snapshot, currentGameplayData.gameplayId);
 }
+
 
 function startNewGame(){
     if (isRunning === false){
@@ -94,12 +93,12 @@ function showSnapshot(){
 }
 
 function showScores(auData){
-  document.getElementById("correct-aus").innerHTML = "Our picture: " + currentRandomImage.actionUnits;
+  document.getElementById("correct-aus").innerHTML = "Our picture: " + currentGameplayData.actionUnits;
   document.getElementById("correct-aus").style.display = "block"; 
   document.getElementById("timer").style.display = "none";
   document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
   document.getElementById("your-aus").style.display = "block";
-  document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(jaccard(currentRandomImage.actionUnits, auData.actionUnits) * 100) + "%";
+  document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(jaccard(currentGameplayData.actionUnits, auData.actionUnits) * 100) + "%";
   document.getElementById("jaccard-score").style.display = "block";
   document.getElementById("retry-btn").style.display = "inline-block";
 }
@@ -136,21 +135,28 @@ function hideScores(){
   document.getElementById("your-aus").style.display = "none";
 }
 
-async function requestRandomImage(){
-    const apiURL = "/api/getRandomImage"
+async function getGameplayData(){
+    const apiURL = "/api/getGameplayData"
     let res = await fetch(apiURL, {method: "GET"});
     let json = await res.json();
     return json;
 }
 
-async function requestActionUnits(image){
+async function requestActionUnits(image, gameplayId){
   const apiURL = "/api/getActionUnits";
-  const data = {"image": image}
-  console.log(data);
-  let res = await fetch(apiURL, {method: "post", mode: 'cors',
+  const data = {"base64image": image, "gameplayId": gameplayId};
+  let res = await fetch(apiURL, {method: "POST", mode: 'cors',
   headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
   let json = await res.json();
   return json;
+}
+
+async function sendStatusVector(statusVector, gameplayId){
+  const apiURL = "/api/uploadOnlineResults";
+  const data = {"statusVector": statusVector, "gameplayId": gameplayId};
+  let res = await fetch(apiURL, {method: "POST", mode: 'cors',
+  headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+  return;
 }
 
 /**

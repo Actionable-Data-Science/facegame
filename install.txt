@@ -1,0 +1,26 @@
+! Use a python virtual environment !
+
+Needed packages: wheel os-sys opencv-python urllib3 matplotlib pylab-sdk numpy dlib joblib scipy scikit-image scikit-learn==0.24.1 flask
+
+Needed resources (save in resources folder):
+
+hog_pca_all_emotio.joblib
+hog_scalar_aus.joblib
+shape_predictor_68_face_landmarks.dat
+svm_568.joblib
+
+Create a .env file with the following contents:
+
+AU_MODEL_ID=
+FACES_FOLDER_PATH=
+GAMEPLAY_IMAGE_FOLDER_PATH=
+USERS=[["Test", "test"]]
+
+Without a space, add model id, faces folder path and gameplay image folder path. 
+
+USERS takes a list of ["username", "password"], e.g.
+
+USERS=[["user1", "pass1"], "user2", "pass2"]
+
+Anyone with the user credentials can upload images that will be shown to other players. 
+Keep the credentials safe and only share with people you trust.
