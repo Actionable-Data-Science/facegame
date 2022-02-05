@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from os.path import exists
 from au_detection import calculate_action_units_from_image_url
 from datetime import datetime
 from dotenv import load_dotenv
@@ -7,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 AU_MODEL_ID = os.environ["AU_MODEL_ID"]
+FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 
 connection = sqlite3.connect("database/facegame.db", check_same_thread=False)
 cursor = connection.cursor()
@@ -125,8 +127,24 @@ def get_random_image_data():
     return gold_id, random_filename, gold_action_units
 
 def check_all_images_present():
-    pass
-    # at server start, check if all images that are in the database are present to prevent crashes
+    sql_command = "SELECT image_url from TBL_IMAGES_GOLD" 
+    cursor.execute(sql_command)
+    output = cursor.fetchall()
+    for filename in output:
+        if not exists(filename[0]):
+            print(f"{filename[0]} does not exist, but is in database!")
+
+def check_all_images_in_database():
+    output = os.listdir(FACES_FOLDER_PATH)
+    for filename in output:
+        sql_command = "SELECT * FROM TBL_IMAGES_GOLD WHERE image_url = (?)"
+        cursor.execute(sql_command, (os.path.join(FACES_FOLDER_PATH, filename),))
+        output = cursor.fetchone()
+        if not output:
+            print(f"{filename} does exist, but is not in database!")
+
 
 
 create_tables_if_not_exist()
+check_all_images_present()
+check_all_images_in_database()
