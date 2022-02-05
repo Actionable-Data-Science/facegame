@@ -55,9 +55,16 @@ def get_gameplay_data():
     gameplay_id = add_gameplay(random_image_id)
     return jsonify(imageId=random_image_id, imageName= random_filename, actionUnits= random_image_aus, gameplayId = gameplay_id)
 
+@app.route('/api/getNewGameplayId', methods=["GET"])
+def get_new_gameplay_id():
+    image_id = request.args.get("imageId")
+    print("Retry for: ", image_id)
+    gameplay_id = add_gameplay(image_id)
+    return jsonify(gameplayId=gameplay_id)
+
 @app.route('/api/getSessionId', methods=["GET"])
 def get_session_id():
-    session_id = add_session("1.1.1.1")
+    session_id = add_session(request.remote_addr)
     return jsonify(sessionId= session_id)
 
 @app.route('/api/getActionUnits', methods=["POST"])
@@ -65,11 +72,12 @@ def get_action_units():
     req = request.json
     image = req["base64image"]
     gameplay_id = req["gameplayId"]
+    session_id = req["sessionId"]
     action_units = calculate_action_units_from_base_64_image(image)
     image_url = imagepath = os.path.join(GAMEPLAY_IMAGE_FOLDER_PATH, f"gameplay_img_{gameplay_id}")
     with open(image_url, "wb") as file:
         file.write(urlsafe_b64decode(image.split(",")[1]))
-    update_gameplay_image_and_offline_aus(gameplay_id, image_url, action_units)
+    update_gameplay_image_and_offline_aus(gameplay_id, image_url, action_units, session_id)
     return jsonify(actionUnits = action_units)
 
 @app.route('/api/uploadOnlineResults', methods=["POST"])

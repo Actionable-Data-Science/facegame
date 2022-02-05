@@ -29,7 +29,7 @@ def create_tables_if_not_exist():
     CREATE TABLE IF NOT EXISTS TBL_GAMEPLAY (
     gameplay_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     gold_id INTEGER,
-  	session_id VARCHAR(10),
+    session_id INTEGER,
     image_url VARCHAR(50),
   	au_list_predicted VARCHAR(200),
   	face_landmark_list_predicted VARCHAR(420),
@@ -39,6 +39,7 @@ def create_tables_if_not_exist():
     emotions_predicted VARCHAR(200),
   	au_model_id VARCHAR(10),
     date DATE,
+    FOREIGN KEY (session_id) REFERENCES TBL_SESSION (session_id)
     FOREIGN KEY (gold_id) REFERENCES TBL_IMAGES_GOLD (gold_id)
     );"""
     cursor.execute(sql_command)
@@ -86,13 +87,13 @@ def add_session(ip_address):
     return cursor.lastrowid
 
 # secure this with a secret key / ip adress etc. so that attackers can't change database
-def update_gameplay_image_and_offline_aus(gameplay_id, image_url, au_list_predicted):
+def update_gameplay_image_and_offline_aus(gameplay_id, image_url, au_list_predicted, session_id):
     sql_command = """
     UPDATE TBL_GAMEPLAY SET
-    image_url=?, au_list_predicted=?, au_model_id=?
+    image_url=?, au_list_predicted=?, au_model_id=?, session_id=?
     WHERE gameplay_id = ?
     """
-    update_data = (image_url, str(au_list_predicted), AU_MODEL_ID, gameplay_id)
+    update_data = (image_url, str(au_list_predicted), AU_MODEL_ID, session_id, gameplay_id)
     cursor.execute(sql_command, update_data)
     connection.commit()
     return gameplay_id

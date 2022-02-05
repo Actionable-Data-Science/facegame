@@ -7,6 +7,7 @@ const ctxCanvasSnapshot = canvasSnapshot.getContext("2d");
 const video = document.getElementById("video-input");
 
 let currentGameplayData;
+let currentSessionId;
 
 let pictureAUs = [];
 
@@ -15,6 +16,7 @@ document.getElementById("retry-btn").addEventListener("click", retryGame);
 
 let isRunning = false;
 
+getSessionId();
 main();
 
 function main(){
@@ -43,11 +45,11 @@ async function finishRound(){
     ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
     const snapshot = canvasSnapshot.toDataURL("image/png");
     console.log("Current Gameplay ID:", currentGameplayData.gameplayId);
-    const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId);
+    const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId);
     actionUnitData.then(auData => {
       showScores(auData);
     });
-    generateStatus(snapshot, currentGameplayData.gameplayId);
+    generateStatus(snapshot, currentGameplayData.gameplayId, currentSessionId);
 }
 
 
@@ -111,6 +113,7 @@ function jaccard(auSet1, auSet2){
 }
 
 function retryGame(){
+  getNewGameplayId(currentGameplayData.imageId);
   startRound();
 }
 
@@ -142,21 +145,39 @@ async function getGameplayData(){
     return json;
 }
 
-async function requestActionUnits(image, gameplayId){
+async function requestActionUnits(image, gameplayId, sessionId){
   const apiURL = "/api/getActionUnits";
-  const data = {"base64image": image, "gameplayId": gameplayId};
+  const data = {"base64image": image, "gameplayId": gameplayId, "sessionId": sessionId};
   let res = await fetch(apiURL, {method: "POST", mode: 'cors',
   headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
   let json = await res.json();
   return json;
 }
 
-async function sendStatusVector(statusVector, gameplayId){
+async function sendStatusVector(statusVector, gameplayId, sessionId){
   const apiURL = "/api/uploadOnlineResults";
-  const data = {"statusVector": statusVector, "gameplayId": gameplayId};
+  const data = {"statusVector": statusVector, "gameplayId": gameplayId, "sessionId": sessionId};
   let res = await fetch(apiURL, {method: "POST", mode: 'cors',
   headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
   return;
+}
+
+async function getSessionId(){
+  const apiURL = "/api/getSessionId";
+  let res = await fetch(apiURL, {method: "GET"});
+  await res.json().then(json => {
+    // console.log("Session ID: ", json.sessionId);
+    currentSessionId = json.sessionId;
+  });
+}
+
+async function getNewGameplayId(imageId){
+  const apiURL = `/api/getNewGameplayId?imageId= ${imageId}`;
+  let res = await fetch(apiURL, {method: "GET"});
+  await res.json().then(json => {
+    // console.log("Gameplay ID: ", json.gameplayId)
+    currentGameplayData.gameplayId = json.gameplayId;
+  });
 }
 
 /**

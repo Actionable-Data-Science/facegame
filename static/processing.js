@@ -8,7 +8,7 @@ async function loadModels(){
     await faceapi.nets.ageGenderNet.loadFromUri('/static/models/');
 }
 
-async function generateStatus(img, gameplayId){
+async function generateStatus(img, gameplayId, sessionId){
     let statusVector = {
         emotions: "", // emotion
         landmarks: [], // list of lists of length 2 of length 68
@@ -35,7 +35,7 @@ async function generateStatus(img, gameplayId){
         } else {
             statusVector.error = "face not fully in picture";
         }      
-        sendStatusVector(statusVector, gameplayId); 
+        sendStatusVector(statusVector, gameplayId, sessionId); 
         console.log("Status sent to server!");
     }
 }
