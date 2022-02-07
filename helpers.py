@@ -10,6 +10,7 @@ from flask import jsonify
 from database import add_gold_image
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 

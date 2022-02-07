@@ -19,9 +19,7 @@ let isRunning = false;
 main();
 
 async function main(){
-    await getSessionId();
-    startWebcam();
-    getImageThenStart();
+    getSessionId().then(startWebcam().then(getImageThenStart));
 }
 
 async function getImageThenStart(){
@@ -35,7 +33,7 @@ async function startRound(){
     hideScores();
     showLiveVideo();
     setNewImage(`static/faces/${currentGameplayData.imageName}`);
-    countdown(1);
+    countdown(5);
 }
 
 async function finishRound(){
@@ -46,6 +44,7 @@ async function finishRound(){
     const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId);
     actionUnitData.then(auData => {
       showScores(auData);
+
     });
     generateStatus(snapshot, currentGameplayData.gameplayId, currentSessionId);
 }
@@ -182,7 +181,7 @@ async function getNewGameplayId(imageId){
  * startWebcam - Function that starts the webcam and displays it in the "video" object.
  *
  */
- function startWebcam() {
+ async function startWebcam() {
     const cameraSelectBox = document.getElementById("camera-select-box");
     
     cameraSelectBox.addEventListener('click', event => {

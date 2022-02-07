@@ -3,6 +3,7 @@ from au_detection import calculate_action_units_from_base_64_image
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from base64 import urlsafe_b64decode
+import ast
 import helpers
 import logging
 import os
@@ -52,7 +53,7 @@ def get_gameplay_data():
     random_image_data = database.get_random_image_data(session_id)
     random_image_id = random_image_data[0]
     random_filename = random_image_data[1].split("/")[-1]
-    random_image_aus = random_image_data[2]
+    random_image_aus = ast.literal_eval(random_image_data[2])
     gameplay_id = database.add_gameplay(random_image_id)
     database.add_played_image_to_session(session_id, random_image_id)
     print(random_image_id, random_filename, random_image_aus)
