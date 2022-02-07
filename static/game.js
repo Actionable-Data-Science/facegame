@@ -16,20 +16,18 @@ document.getElementById("retry-btn").addEventListener("click", retryGame);
 
 let isRunning = false;
 
-getSessionId();
 main();
 
-function main(){
+async function main(){
+    await getSessionId();
     startWebcam();
     getImageThenStart();
 }
-
 
 async function getImageThenStart(){
   currentGameplayData = await getGameplayData();
   startRound();
 }
-
 
 async function startRound(){
     isRunning = true;
@@ -37,7 +35,7 @@ async function startRound(){
     hideScores();
     showLiveVideo();
     setNewImage(`static/faces/${currentGameplayData.imageName}`);
-    countdown(5);
+    countdown(1);
 }
 
 async function finishRound(){
@@ -52,7 +50,6 @@ async function finishRound(){
     generateStatus(snapshot, currentGameplayData.gameplayId, currentSessionId);
 }
 
-
 function startNewGame(){
     if (isRunning === false){
       document.getElementById("timer").innerHTML = "Loading new image...";
@@ -63,7 +60,7 @@ function startNewGame(){
 function countdown(seconds){
     const timerElem = document.getElementById("timer");
     function tick(){
-        if (seconds == 0){
+        if (seconds === 0){
             timerElem.innerHTML = "Evaluating Action Units...";
             isRunning = false;
             finishRound();
@@ -133,15 +130,16 @@ function mergeAndDeduplicate(arr1, arr2){
 
 function hideScores(){
   document.getElementById("jaccard-score").style.display = "none";
-  document.getElementById("status").style.display = "none";
+  // document.getElementById("status").style.display = "none";
   document.getElementById("correct-aus").style.display = "none";
   document.getElementById("your-aus").style.display = "none";
 }
 
 async function getGameplayData(){
-    const apiURL = "/api/getGameplayData"
+    const apiURL = `/api/getGameplayData?sessionId=${currentSessionId}` 
     let res = await fetch(apiURL, {method: "GET"});
     let json = await res.json();
+    console.log(json);
     return json;
 }
 
@@ -172,7 +170,7 @@ async function getSessionId(){
 }
 
 async function getNewGameplayId(imageId){
-  const apiURL = `/api/getNewGameplayId?imageId= ${imageId}`;
+  const apiURL = `/api/getNewGameplayId?imageId=${imageId}`;
   let res = await fetch(apiURL, {method: "GET"});
   await res.json().then(json => {
     // console.log("Gameplay ID: ", json.gameplayId)

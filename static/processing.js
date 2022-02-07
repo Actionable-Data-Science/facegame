@@ -15,6 +15,8 @@ async function generateStatus(img, gameplayId, sessionId){
         hogs: [], // list of 5408 
         gender: "",
         age: "",
+        faceBbox: "",
+        imageDims: "",
         error: ""
     };
     var image = document.createElement('img');
@@ -32,6 +34,10 @@ async function generateStatus(img, gameplayId, sessionId){
             statusVector.hogs = await getHogs(maskedFace);
             statusVector.gender = `${resizedDetections.gender} (${resizedDetections.genderProbability.toFixed(2)})`;
             statusVector.age = `${resizedDetections.age.toFixed(2)}`;
+            statusVector.faceBbox = `${det._x}, ${det._y}, ${det._width}, 
+                                    ${det._height}`;
+            statusVector.imageDims = `${image.width, image.height}`
+
         } else {
             statusVector.error = "face not fully in picture";
         }      

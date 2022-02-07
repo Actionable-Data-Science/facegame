@@ -1,14 +1,13 @@
 import sys
 import cv2
-import urllib.request as urlreq
+# import urllib.request as urlreq
 import os
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import skimage
 import numpy as np
 import math
 import dlib
 import joblib
-from time import sleep
 from scipy.spatial import ConvexHull
 from skimage.morphology.convex_hull import grid_points_in_poly
 from skimage.feature import hog
@@ -20,9 +19,11 @@ load_dotenv()
 FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 
 def calculate_action_units_from_image_url(image_url):
+    """Returns list of action units for image with filepath image_url"""
     return calculate_action_units(cv2.imread(image_url))
 
 def calculate_action_units_from_base_64_image(base64image):
+    """Returns list of action units for base64 encoded image"""
     def readb64(uri):
         encoded_data = uri.split(',')[1]
         nparr = np.fromstring(b64decode(encoded_data), np.uint8)
@@ -225,7 +226,6 @@ def calculate_action_units(image):
     for i in range(len(offline_pred_aus)):
         if offline_pred_aus[i] ==1:
             predictions_output.append(int(au_array[i]))
-
 
     return predictions_output
 
