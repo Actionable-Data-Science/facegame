@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import ast
+from uuid import uuid1
 from os.path import exists
 from au_detection import calculate_action_units_from_image_url
 from datetime import datetime
@@ -14,14 +15,14 @@ lock = Lock()
 AU_MODEL_ID = os.environ["AU_MODEL_ID"]
 FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 
-connection = sqlite3.connect("database/facegame.db", check_same_thread=False)
+connection = sqlite3.connect("database/facegame.db", check_same_thread=False, timeout=2500)
 cursor = connection.cursor()
 
 def create_tables_if_not_exist():
     """Creates all tables for the database if they don't already exists"""
     sql_command = """
     CREATE TABLE IF NOT EXISTS TBL_IMAGES_GOLD (
-    gold_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    gold_id VARCHAR(32) PRIMARY KEY, 
     image_url VARCHAR(50),
   	au_list_predicted VARCHAR(200),
   	gender_predicted CHAR(1),
@@ -34,9 +35,9 @@ def create_tables_if_not_exist():
 
     sql_command = """
     CREATE TABLE IF NOT EXISTS TBL_GAMEPLAY (
-    gameplay_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    gold_id INTEGER,
-    session_id INTEGER,
+    gameplay_id VARCHAR(32) PRIMARY KEY, 
+    gold_id VARCHAR(32),
+    session_id VARCHAR(32),
     image_url VARCHAR(50),
   	au_list_predicted VARCHAR(200),
   	face_landmark_list_predicted VARCHAR(420),
@@ -55,7 +56,7 @@ def create_tables_if_not_exist():
 
     sql_command = """
     CREATE TABLE IF NOT EXISTS TBL_SESSION (
-    session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id VARCHAR(32) PRIMARY KEY,
     ip_address VARCHAR(50),
     played_images VARCHAR(100), 
     date DATE
@@ -66,11 +67,12 @@ def create_tables_if_not_exist():
 def add_gold_image(image_url):
     """Adds gold image to TBL_IMAGES_GOLD, creating AU data for it automatically"""
     sql_command = """
-    INSERT INTO TBL_IMAGES_GOLD (image_url, au_list_predicted, au_model_id, date) 
-    VALUES (?, ?, ?, ?);
+    INSERT INTO TBL_IMAGES_GOLD (image_url, au_list_predicted, au_model_id, date, gold_id) 
+    VALUES (?, ?, ?, ?, ?);
     """
+    gold_id = uuid1().hex
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
-    new_gold_image = (image_url, str(calculate_action_units_from_image_url(image_url)), AU_MODEL_ID, time)
+    new_gold_image = (image_url, str(calculate_action_units_from_image_url(image_url)), AU_MODEL_ID, time, gold_id)
     cursor.execute(sql_command, new_gold_image)
     connection.commit()
     return cursor.lastrowid
@@ -78,11 +80,12 @@ def add_gold_image(image_url):
 def add_gameplay(gold_id):
     """Adds gameplay (1 round) to TBL_GAMEPLAY"""
     sql_command = """ 
-    INSERT INTO TBL_GAMEPLAY (gold_id, date) 
-    VALUES (?, ?);
+    INSERT INTO TBL_GAMEPLAY (gold_id, date, gameplay_id) 
+    VALUES (?, ?, ?);
     """
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
-    new_data = (gold_id, time)
+    gameplay_id = uuid1().hex
+    new_data = (gold_id, time, gameplay_id)
     cursor.execute(sql_command, new_data)
     connection.commit()
     return cursor.lastrowid
@@ -90,11 +93,12 @@ def add_gameplay(gold_id):
 def add_session(ip_address):
     """Adds a new session to TBL_SESSION, logging date and origin ip"""
     sql_command = """
-    INSERT INTO TBL_SESSION (ip_address, date, played_images)
-    VALUES (?, ?, ?);
+    INSERT INTO TBL_SESSION (ip_address, date, played_images, session_id)
+    VALUES (?, ?, ?, ?);
     """
+    session_id = uuid1().hex
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
-    new_data = (ip_address, time, "[]")
+    new_data = (ip_address, time, "[]", session_id)
     cursor.execute(sql_command, new_data)
     connection.commit()
     return cursor.lastrowid
