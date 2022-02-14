@@ -31,7 +31,12 @@ def create_tables_if_not_exist():
   	au_model_id VARCHAR(10),
     date DATE
     );"""
-    cursor.execute(sql_command)
+
+    try: 
+        lock.acquire(True)
+        cursor.execute(sql_command)
+    finally:
+        lock.release()
 
     sql_command = """
     CREATE TABLE IF NOT EXISTS TBL_GAMEPLAY (
@@ -45,6 +50,7 @@ def create_tables_if_not_exist():
   	gender_predicted CHAR(1),
   	age_predicted INTEGER,
     emotions_predicted VARCHAR(200),
+    jaccard_index REAL,
   	au_model_id VARCHAR(10),
     face_bbox VARCHAR(20),
     image_dims VARCHAR(20),
@@ -52,17 +58,24 @@ def create_tables_if_not_exist():
     FOREIGN KEY (session_id) REFERENCES TBL_SESSION (session_id)
     FOREIGN KEY (gold_id) REFERENCES TBL_IMAGES_GOLD (gold_id)
     );"""
-    cursor.execute(sql_command)
+
+    try: 
+        lock.acquire(True)
+        cursor.execute(sql_command)
+    finally:
+        lock.release()
 
     sql_command = """
     CREATE TABLE IF NOT EXISTS TBL_SESSION (
     session_id VARCHAR(32) PRIMARY KEY,
     ip_address VARCHAR(50),
-    played_images VARCHAR(100), 
     date DATE
-    )
-    """ # get rid of played_images, use query of TBL_GAMEPLAY instead
-    cursor.execute(sql_command)
+    )"""
+    try: 
+        lock.acquire(True)
+        cursor.execute(sql_command)
+    finally:
+        lock.release()
 
 def add_gold_image(image_url):
     """Adds gold image to TBL_IMAGES_GOLD, creating AU data for it automatically"""
@@ -73,9 +86,13 @@ def add_gold_image(image_url):
     gold_id = uuid1().hex
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
     new_gold_image = (image_url, str(calculate_action_units_from_image_url(image_url)), AU_MODEL_ID, time, gold_id)
-    cursor.execute(sql_command, new_gold_image)
+    try: 
+        lock.acquire(True)
+        cursor.execute(sql_command, new_gold_image)
+    finally:
+        lock.release()
     connection.commit()
-    return cursor.lastrowid
+    return gold_id
 
 def add_gameplay(gold_id):
     """Adds gameplay (1 round) to TBL_GAMEPLAY"""
@@ -86,9 +103,13 @@ def add_gameplay(gold_id):
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
     gameplay_id = uuid1().hex
     new_data = (gold_id, time, gameplay_id)
-    cursor.execute(sql_command, new_data)
+    try:
+        lock.acquire(True)
+        cursor.execute(sql_command, new_data)
+    finally:
+        lock.release()
     connection.commit()
-    return cursor.lastrowid
+    return gameplay_id
 
 def add_session(ip_address):
     """Adds a new session to TBL_SESSION, logging date and origin ip"""
@@ -99,20 +120,28 @@ def add_session(ip_address):
     session_id = uuid1().hex
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
     new_data = (ip_address, time, "[]", session_id)
-    cursor.execute(sql_command, new_data)
+    try:
+        lock.acquire(True)
+        cursor.execute(sql_command, new_data)
+    finally:
+        lock.release()
     connection.commit()
-    return cursor.lastrowid
+    return session_id
 
 # secure this with a secret key / ip adress etc. so that attackers can't change database
-def update_gameplay_image_and_offline_aus(gameplay_id, image_url, au_list_predicted, session_id):
+def update_gameplay_image_and_offline_aus(gameplay_id, image_url, au_list_predicted, jaccard_index, session_id):
     """Adds player image, predicted au's and session id to TBL_GAMEPLAY"""
     sql_command = """
     UPDATE TBL_GAMEPLAY SET
-    image_url=?, au_list_predicted=?, au_model_id=?, session_id=?
+    image_url=?, au_list_predicted=?, au_model_id=?, jaccard_index=?, session_id=?
     WHERE gameplay_id = ?
     """
-    update_data = (image_url, str(au_list_predicted), AU_MODEL_ID, session_id, gameplay_id)
-    cursor.execute(sql_command, update_data)
+    update_data = (image_url, str(au_list_predicted), AU_MODEL_ID, jaccard_index, session_id, gameplay_id)
+    try:
+        lock.acquire(True)
+        cursor.execute(sql_command, update_data)
+    finally:
+        lock.release()
     connection.commit()
     return gameplay_id
 
@@ -130,55 +159,54 @@ def update_gameplay_online_results(gameplay_id, face_landmark_list_predicted,
     """
     update_data = (str(face_landmark_list_predicted), str(hog_values_list_predicted), gender_predicted,
                   age_predicted, str(emotions_predicted), face_bbox, image_dims, gameplay_id)
-    cursor.execute(sql_command, update_data)
+    
+    try:
+        lock.acquire(True)
+        cursor.execute(sql_command, update_data)
+    finally:
+        lock.release()
     connection.commit()
     return gameplay_id
-
-# def get_random_image_data(session_id):
-#     """Returns data for a random image that was not played in session with id session_id"""
-#     image_already_played = True
-#     #lock.acquire(True)
-#     while image_already_played == True:
-#         sql_command = """
-#         SELECT * FROM TBL_IMAGES_GOLD ORDER BY RANDOM() LIMIT 1
-#         """
-#         cursor.execute(sql_command)
-#         row = cursor.fetchall()[0]
-#         connection.commit()
-#         gold_id, random_filename, gold_action_units = row[0], row[1], row[2]
-#         # image_already_played = False
-#         image_already_played = check_if_image_played_in_session(session_id, gold_id)
-#         # this generates recursive use of cursor, apparently as sql commands are executed in batch and loop creates weirdness
-#     #lock.acquire(False)
-#     return gold_id, random_filename, gold_action_units
 
 def get_random_image_data(session_id):
     """Returns data for a random image that was not played in session with id session_id"""
     # SELECT TBL_IMAGES_GOLD.gold_id from TBL_IMAGES_GOLD WHERE (COUNT (*) SELECT TBL_GAMEPLAY.gold_id, TBL_GAMEPLAY.session_id FROM TBL_GAMEPLAY WHERE (TBL_GAMEPLAY.gold_id=TBL_IMAGES_GOLD.gold_id AND TBL_GAMEPLAY.session_id="X"))
     sql_command = """
-    SELECT TBL_IMAGES_GOLD.gold_id, TBL_IMAGES_GOLD.image_url, TBL_IMAGES_GOLD.au_list_predicted 
-    from TBL_IMAGES_GOLD WHERE 
-    (SELECT COUNT(*) FROM TBL_GAMEPLAY WHERE 
-    (TBL_GAMEPLAY.gold_id=TBL_IMAGES_GOLD.gold_id AND TBL_GAMEPLAY.session_id=(?)) LIMIT 1)=0 
+    SELECT GOLD.gold_id, GOLD.image_url, GOLD.au_list_predicted
+    from TBL_IMAGES_GOLD as GOLD WHERE
+    (SELECT COUNT(*) FROM TBL_GAMEPLAY as GAME WHERE
+    (GAME.gold_id=GOLD.gold_id AND GAME.session_id=(?)) LIMIT 1)=0
     ORDER BY RANDOM() LIMIT 1
     """
-    cursor.execute(sql_command, (session_id,))
-    output = cursor.fetchone()
+    try:
+        lock.acquire(True)
+        cursor.execute(sql_command, (session_id,))
+        output = cursor.fetchone()
+    finally:
+        lock.release()  
     if not output:
         sql_command = """
-        SELECT TBL_IMAGES_GOLD.gold_id, TBL_IMAGES_GOLD.image_url, TBL_IMAGES_GOLD.au_list_predicted 
-        from TBL_IMAGES_GOLD ORDER BY RANDOM() LIMIT 1
-        """
-        cursor.execute(sql_command)
-        output = cursor.fetchone()
+            SELECT GOLD.gold_id, GOLD.image_url, GOLD.au_list_predicted
+            from TBL_IMAGES_GOLD ORDER BY RANDOM() LIMIT 1
+            """
+        try:
+            lock.acquire(True)
+            cursor.execute(sql_command)
+            output = cursor.fetchone()
+        finally:
+            lock.release()
     return output[0], output[1], output[2]
 
     
 def check_all_images_present():
     """Prints gold images that are in the database but not in the image folder"""
     sql_command = "SELECT image_url from TBL_IMAGES_GOLD" 
-    cursor.execute(sql_command)
-    output = cursor.fetchall()
+    try:
+        lock.acquire(True)
+        cursor.execute(sql_command)
+        output = cursor.fetchall()
+    finally:
+        lock.release()
     for filename in output:
         if not exists(filename[0]):
             print(f"{filename[0]} does not exist, but is in database!")
@@ -188,37 +216,31 @@ def check_all_images_in_database():
     output = os.listdir(FACES_FOLDER_PATH)
     for filename in output:
         sql_command = "SELECT * FROM TBL_IMAGES_GOLD WHERE image_url = (?)"
-        cursor.execute(sql_command, (os.path.join(FACES_FOLDER_PATH, filename),))
-        output = cursor.fetchone()
+        try:
+            lock.acquire(True)
+            cursor.execute(sql_command, (os.path.join(FACES_FOLDER_PATH, filename),))
+            output = cursor.fetchone()
+        finally: 
+            lock.release()
         if not output:
             print(f"{filename} does exist, but is not in database!")
 
-def get_played_images_for_session(session_id):
-    """Returns a list of gold_id's played during session with id session_id"""
-    sql_command = "SELECT played_images from TBL_SESSION WHERE session_id = (?)"
-    cursor.execute(sql_command, (session_id,))
-    output = cursor.fetchone()
-    if output:
-        return ast.literal_eval(output[0])
-    else: 
-        return []
+def get_action_units_for_gold(gold_id):
+    """Returns action units for gold image with id gold_id"""
+    sql_command = "SELECT au_list_predicted from TBL_IMAGES_GOLD where gold_id = (?)"
+    try:
+        lock.acquire(True)
+        cursor.execute(sql_command, (gold_id,))
+        output = cursor.fetchone()[0]
+    finally:
+        lock.release()
+    return ast.literal_eval(output)
 
-def check_if_image_played_in_session(session_id, gold_id):
-    """Returns True if a gold image with id gold_id was already played 
-    in session with id session_id"""
-    played_images = get_played_images_for_session(session_id)
-    if gold_id in played_images:
-        return True
-    else:
-        return False
-
-def add_played_image_to_session(session_id, gold_id):
-    """Adds image with id gold_id to the played_images in TBL_SESSION"""
-    played_images = get_played_images_for_session(session_id)
-    played_images.append(gold_id)
-    sql_command = "UPDATE TBL_SESSION SET played_images = (?) WHERE session_id = (?)"
-    cursor.execute(sql_command, (str(played_images), session_id))
-    return True
+# def update_jaccard_score(gameplay_id, score):
+#     """Updates the jaccard score for gameplay with id gameplay_id to score"""
+#     sql_command = "UPDATE TBL_GAMEPLAY SET jaccard_index = (?) WHERE gameplay_id = (?)"
+#     cursor.execute(sql_command, (score, gameplay_id))
+#     return True
 
 create_tables_if_not_exist()
 check_all_images_present()

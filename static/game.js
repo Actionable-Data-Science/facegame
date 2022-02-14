@@ -41,7 +41,7 @@ async function finishRound(){
     ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
     const snapshot = canvasSnapshot.toDataURL("image/png");
     console.log("Current Gameplay ID:", currentGameplayData.gameplayId);
-    const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId);
+    const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId, currentGameplayData.imageId);
     actionUnitData.then(auData => {
       showScores(auData);
 
@@ -96,17 +96,17 @@ function showScores(auData){
   document.getElementById("timer").style.display = "none";
   document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
   document.getElementById("your-aus").style.display = "block";
-  document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(jaccard(currentGameplayData.actionUnits, auData.actionUnits) * 100) + "%";
+  document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(auData.jaccardIndex * 100) + "%";
   document.getElementById("jaccard-score").style.display = "block";
   document.getElementById("retry-btn").style.display = "inline-block";
 }
 
-function jaccard(auSet1, auSet2){
-  const allAUs = mergeAndDeduplicate(auSet1, auSet2);
-  const intersectionAUList = auSet2.filter(x => auSet1.includes(x));
-  const score = intersectionAUList.length / allAUs.length;
-  return score;
-}
+// function jaccard(auSet1, auSet2){
+//   const allAUs = mergeAndDeduplicate(auSet1, auSet2);
+//   const intersectionAUList = auSet2.filter(x => auSet1.includes(x));
+//   const score = intersectionAUList.length / allAUs.length;
+//   return score;
+// }
 
 function retryGame(){
   getNewGameplayId(currentGameplayData.imageId);
@@ -142,9 +142,9 @@ async function getGameplayData(){
     return json;
 }
 
-async function requestActionUnits(image, gameplayId, sessionId){
+async function requestActionUnits(image, gameplayId, sessionId, goldId){
   const apiURL = "/api/getActionUnits";
-  const data = {"base64image": image, "gameplayId": gameplayId, "sessionId": sessionId};
+  const data = {"base64image": image, "gameplayId": gameplayId, "sessionId": sessionId, "goldId": goldId};
   let res = await fetch(apiURL, {method: "POST", mode: 'cors',
   headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
   let json = await res.json();

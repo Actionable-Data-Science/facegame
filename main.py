@@ -55,7 +55,6 @@ def get_gameplay_data():
     random_filename = random_image_data[1].split("/")[-1]
     random_image_aus = ast.literal_eval(random_image_data[2])
     gameplay_id = database.add_gameplay(random_image_id)
-    database.add_played_image_to_session(session_id, random_image_id)
     print(random_image_id, random_filename, random_image_aus)
     return jsonify(imageId=random_image_id, imageName= random_filename, actionUnits= random_image_aus, gameplayId = gameplay_id)
 
@@ -78,12 +77,14 @@ def get_action_units():
     image = req["base64image"]
     gameplay_id = req["gameplayId"]
     session_id = req["sessionId"]
+    gold_id = req["goldId"]
     action_units = calculate_action_units_from_base_64_image(image)
     image_url = imagepath = os.path.join(GAMEPLAY_IMAGE_FOLDER_PATH, f"gameplay_img_{gameplay_id}")
     with open(image_url, "wb") as file:
         file.write(urlsafe_b64decode(image.split(",")[1]))
-    database.update_gameplay_image_and_offline_aus(gameplay_id, image_url, action_units, session_id)
-    return jsonify(actionUnits = action_units)
+    jaccard_index = helpers.calculate_jaccard_index(database.get_action_units_for_gold(gold_id), action_units)
+    database.update_gameplay_image_and_offline_aus(gameplay_id, image_url, action_units, jaccard_index, session_id)
+    return jsonify(actionUnits = action_units, jaccardIndex = jaccard_index)
 
 @app.route('/api/uploadOnlineResults', methods=["POST"])
 def upload_online_results():

@@ -28,6 +28,10 @@ def check_admin_credentials(user, password):
     else:
         return False
 
+def calculate_jaccard_index(arr1, arr2):
+    intersect = len([x for x in arr1 if x in arr2])
+    return intersect / (len(arr1) + len(arr2) - intersect)       
+
 def generate_data(path_to_image):
     add_gold_image(path_to_image)
 
