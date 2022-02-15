@@ -3,6 +3,7 @@ from au_detection import calculate_action_units_from_base_64_image
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from base64 import urlsafe_b64decode
+import threading
 import ast
 import helpers
 import logging
@@ -50,7 +51,7 @@ def send_admin():
 @app.route('/api/getGameplayData', methods=["GET"])
 def get_gameplay_data():
     session_id = request.args.get("sessionId")
-    random_image_data = database.get_random_image_data(session_id)
+    random_image_data = database.get_random_image_data(session_id, True)
     random_image_id = random_image_data[0]
     random_filename = random_image_data[1].split("/")[-1]
     random_image_aus = ast.literal_eval(random_image_data[2])
@@ -105,7 +106,8 @@ def upload_image():
         for imagefile in imagefiles:
             imagepath = os.path.join(FACES_FOLDER_PATH, secure_filename(imagefile.filename))
             imagefile.save(imagepath)
-            helpers.generate_data(imagepath)
+            thread = threading.Thread(target=helpers.calculate_gold_aus, args=(imagepath, user))
+            thread.start()
         return "Success!"
     else:
         return "Wrong user credentials"

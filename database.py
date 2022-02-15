@@ -1,12 +1,14 @@
 import sqlite3
 import os
 import ast
+import threading
 from uuid import uuid1
 from os.path import exists
 from au_detection import calculate_action_units_from_image_url
 from datetime import datetime
 from dotenv import load_dotenv
 from threading import Lock
+from werkzeug.utils import secure_filename
 from time import sleep
 
 load_dotenv()
@@ -23,6 +25,7 @@ def create_tables_if_not_exist():
     sql_command = """
     CREATE TABLE IF NOT EXISTS TBL_IMAGES_GOLD (
     gold_id VARCHAR(32) PRIMARY KEY, 
+    uploaded_by VARCHAR(20),
     image_url VARCHAR(50),
   	au_list_predicted VARCHAR(200),
   	gender_predicted CHAR(1),
@@ -77,15 +80,15 @@ def create_tables_if_not_exist():
     finally:
         lock.release()
 
-def add_gold_image(image_url):
+def add_gold_image(image_url, uploaded_by):
     """Adds gold image to TBL_IMAGES_GOLD, creating AU data for it automatically"""
     sql_command = """
-    INSERT INTO TBL_IMAGES_GOLD (image_url, au_list_predicted, au_model_id, date, gold_id) 
-    VALUES (?, ?, ?, ?, ?);
+    INSERT INTO TBL_IMAGES_GOLD (image_url, au_list_predicted, au_model_id, date, gold_id, uploaded_by) 
+    VALUES (?, ?, ?, ?, ?, ?);
     """
     gold_id = uuid1().hex
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
-    new_gold_image = (image_url, str(calculate_action_units_from_image_url(image_url)), AU_MODEL_ID, time, gold_id)
+    new_gold_image = (image_url, str(calculate_action_units_from_image_url(image_url)), AU_MODEL_ID, time, gold_id, uploaded_by)
     try: 
         lock.acquire(True)
         cursor.execute(sql_command, new_gold_image)
@@ -114,12 +117,12 @@ def add_gameplay(gold_id):
 def add_session(ip_address):
     """Adds a new session to TBL_SESSION, logging date and origin ip"""
     sql_command = """
-    INSERT INTO TBL_SESSION (ip_address, date, played_images, session_id)
-    VALUES (?, ?, ?, ?);
+    INSERT INTO TBL_SESSION (ip_address, date, session_id)
+    VALUES (?, ?, ?);
     """
     session_id = uuid1().hex
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
-    new_data = (ip_address, time, "[]", session_id)
+    new_data = (ip_address, time, session_id)
     try:
         lock.acquire(True)
         cursor.execute(sql_command, new_data)
@@ -168,7 +171,7 @@ def update_gameplay_online_results(gameplay_id, face_landmark_list_predicted,
     connection.commit()
     return gameplay_id
 
-def get_random_image_data(session_id):
+def get_random_image_data(session_id, check_previous):
     """Returns data for a random image that was not played in session with id session_id"""
     # SELECT TBL_IMAGES_GOLD.gold_id from TBL_IMAGES_GOLD WHERE (COUNT (*) SELECT TBL_GAMEPLAY.gold_id, TBL_GAMEPLAY.session_id FROM TBL_GAMEPLAY WHERE (TBL_GAMEPLAY.gold_id=TBL_IMAGES_GOLD.gold_id AND TBL_GAMEPLAY.session_id="X"))
     sql_command = """
@@ -178,16 +181,19 @@ def get_random_image_data(session_id):
     (GAME.gold_id=GOLD.gold_id AND GAME.session_id=(?)) LIMIT 1)=0
     ORDER BY RANDOM() LIMIT 1
     """
-    try:
-        lock.acquire(True)
-        cursor.execute(sql_command, (session_id,))
-        output = cursor.fetchone()
-    finally:
-        lock.release()  
+    if check_previous: # will prevent infinite recursion in case selected image does not exist
+        try:
+            lock.acquire(True)
+            cursor.execute(sql_command, (session_id,))
+            output = cursor.fetchone()
+        finally:
+            lock.release()  
+    else:
+        output = False
     if not output:
         sql_command = """
             SELECT GOLD.gold_id, GOLD.image_url, GOLD.au_list_predicted
-            from TBL_IMAGES_GOLD ORDER BY RANDOM() LIMIT 1
+            from TBL_IMAGES_GOLD AS GOLD ORDER BY RANDOM() LIMIT 1
             """
         try:
             lock.acquire(True)
@@ -195,7 +201,15 @@ def get_random_image_data(session_id):
             output = cursor.fetchone()
         finally:
             lock.release()
-    return output[0], output[1], output[2]
+    if check_image_present(output[1]):
+        return output[0], output[1], output[2]
+    else:
+        return get_random_image_data(session_id, False)
+
+
+def check_image_present(image_url):
+    """Check if image with image url image_url is present in gold faces folder"""
+    return os.path.exists(image_url)
 
     
 def check_all_images_present():
@@ -212,18 +226,22 @@ def check_all_images_present():
             print(f"{filename[0]} does not exist, but is in database!")
 
 def check_all_images_in_database():
-    """Prints gold images that are in the image folder, but not in the database"""
+    """Generates data for gold images that are in the image folder, but not in the database"""
     output = os.listdir(FACES_FOLDER_PATH)
+    missing_list = []
     for filename in output:
         sql_command = "SELECT * FROM TBL_IMAGES_GOLD WHERE image_url = (?)"
         try:
             lock.acquire(True)
-            cursor.execute(sql_command, (os.path.join(FACES_FOLDER_PATH, filename),))
+            imagepath = os.path.join(FACES_FOLDER_PATH, secure_filename(filename))
+            cursor.execute(sql_command, (imagepath,))
             output = cursor.fetchone()
         finally: 
             lock.release()
         if not output:
-            print(f"{filename} does exist, but is not in database!")
+            print(f"{filename} does exist, but is not in database! Adding to DB!")
+            missing_list.append(filename)
+    return missing_list
 
 def get_action_units_for_gold(gold_id):
     """Returns action units for gold image with id gold_id"""
@@ -244,4 +262,3 @@ def get_action_units_for_gold(gold_id):
 
 create_tables_if_not_exist()
 check_all_images_present()
-check_all_images_in_database()
