@@ -16,10 +16,23 @@ document.getElementById("retry-btn").addEventListener("click", retryGame);
 
 let isRunning = false;
 
-main();
+main() // .then(setTimeout(preheatAUDetection, 1000));
+
+async function preheatWebmodels(){
+  ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
+  const snapshot = canvasSnapshot.toDataURL("image/png");
+  generateStatus(snapshot, 0, 0, true);
+}
+
+
+// async function preheatAUDetection(){
+//   ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
+//   const snapshot = canvasSnapshot.toDataURL("image/png");
+//   requestActionUnits(snapshot, 0, 0, 0, true) 
+// }
 
 async function main(){
-    getSessionId().then(startWebcam().then(getImageThenStart));
+  getSessionId().then(startWebcam().then(getImageThenStart));
 }
 
 async function getImageThenStart(){
@@ -41,12 +54,16 @@ async function finishRound(){
     ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
     const snapshot = canvasSnapshot.toDataURL("image/png");
     console.log("Current Gameplay ID:", currentGameplayData.gameplayId);
-    const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId, currentGameplayData.imageId);
+    const t0 = performance.now();
+    const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId, currentGameplayData.imageId, false);
     actionUnitData.then(auData => {
       showScores(auData);
+      const t1 = performance.now();
+      const timeToComplete = t1 - t0;
+      console.log(timeToComplete);
 
     });
-    generateStatus(snapshot, currentGameplayData.gameplayId, currentSessionId);
+    generateStatus(snapshot, currentGameplayData.gameplayId, currentSessionId, false);
 }
 
 function startNewGame(){
@@ -142,14 +159,24 @@ async function getGameplayData(){
     return json;
 }
 
-async function requestActionUnits(image, gameplayId, sessionId, goldId){
+async function requestActionUnits(image, gameplayId, sessionId, goldId, isPreheat){
   const apiURL = "/api/getActionUnits";
-  const data = {"base64image": image, "gameplayId": gameplayId, "sessionId": sessionId, "goldId": goldId};
+  const data = {"base64image": image, "gameplayId": gameplayId, "sessionId": sessionId, "goldId": goldId, "isPreheat": isPreheat};
   let res = await fetch(apiURL, {method: "POST", mode: 'cors',
   headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
   let json = await res.json();
   return json;
 }
+
+// async function preheatAUDetector(image, gameplayId, sessionId, goldId){
+//   const apiURL = "/api/preheatAUDetector";
+//   //const data = {"base64image": image, "gameplayId": gameplayId, "sessionId": sessionId, "goldId": goldId};
+//   const data = {}
+//   let res = await fetch(apiURL, {method: "POST", mode: 'cors',
+//   headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+//   let json = await res.json();
+//   return json;
+// }
 
 async function sendStatusVector(statusVector, gameplayId, sessionId){
   const apiURL = "/api/uploadOnlineResults";

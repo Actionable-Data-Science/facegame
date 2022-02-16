@@ -5,11 +5,13 @@ import base64
 import ast
 import au_detection
 import threading
+from time import sleep
 from random import choice
 from pathlib import Path
 from flask import jsonify
 from database import add_gold_image, check_all_images_in_database
 from dotenv import load_dotenv
+from base64 import urlsafe_b64decode, b64encode
 from werkzeug.utils import secure_filename
 
 load_dotenv()
@@ -28,6 +30,15 @@ def check_admin_credentials(user, password):
     else:
         return False
 
+def load_mini_deniz():
+    with open("./static/mini_deniz.png") as file:
+        b64image = b64encode(file.read())
+    return b64image
+
+def save_b64_to_png(image_url, image):
+    with open(image_url, "wb") as file:
+        file.write(urlsafe_b64decode(image.split(",")[1]))
+
 def calculate_gold_aus(imagepath, uploaded_by):
     print("Calculating AU's for", imagepath)
     add_gold_image(imagepath, uploaded_by)
@@ -43,8 +54,14 @@ def generate_missing():
         thread = threading.Thread(target=calculate_gold_aus, args=(imagepath, "folder"))
         thread.start()
 
+def preheat_au_detection():
+    print("Preheating AU detection")
+    return au_detection.calculate_action_units_from_base_64_image(mini_deniz_b64)
+
+
 def save_automatic_aus():
     with open("static/faces/automatic_au_data.json", "w") as json_file:
         json.dump(automatic_image_aus, json_file)
 
 generate_missing()
+# mini_deniz_b64 = load_mini_deniz()

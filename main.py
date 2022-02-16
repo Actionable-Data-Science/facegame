@@ -2,7 +2,6 @@ from flask import Flask, request, send_from_directory, render_template, redirect
 from au_detection import calculate_action_units_from_base_64_image
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from base64 import urlsafe_b64decode
 import threading
 import ast
 import helpers
@@ -50,6 +49,7 @@ def send_admin():
 
 @app.route('/api/getGameplayData', methods=["GET"])
 def get_gameplay_data():
+    # helpers.preheat_au_detection()
     session_id = request.args.get("sessionId")
     random_image_data = database.get_random_image_data(session_id, True)
     random_image_id = random_image_data[0]
@@ -61,6 +61,7 @@ def get_gameplay_data():
 
 @app.route('/api/getNewGameplayId', methods=["GET"])
 def get_new_gameplay_id():
+    # helpers.preheat_au_detection()
     image_id = request.args.get("imageId")
     print("Retry for: ", image_id)
     gameplay_id = database.add_gameplay(image_id)
@@ -74,18 +75,22 @@ def get_session_id():
 
 @app.route('/api/getActionUnits', methods=["POST"])
 def get_action_units():
-    req = request.json
-    image = req["base64image"]
-    gameplay_id = req["gameplayId"]
-    session_id = req["sessionId"]
-    gold_id = req["goldId"]
-    action_units = calculate_action_units_from_base_64_image(image)
-    image_url = imagepath = os.path.join(GAMEPLAY_IMAGE_FOLDER_PATH, f"gameplay_img_{gameplay_id}")
-    with open(image_url, "wb") as file:
-        file.write(urlsafe_b64decode(image.split(",")[1]))
-    jaccard_index = helpers.calculate_jaccard_index(database.get_action_units_for_gold(gold_id), action_units)
-    database.update_gameplay_image_and_offline_aus(gameplay_id, image_url, action_units, jaccard_index, session_id)
-    return jsonify(actionUnits = action_units, jaccardIndex = jaccard_index)
+    is_preheat = request.json["isPreheat"]
+    gameplay_id = request.json["gameplayId"]
+    session_id = request.json["sessionId"]
+    gold_id = request.json["goldId"]
+    action_units = calculate_action_units_from_base_64_image(request.json["base64image"])
+    if not is_preheat:
+        image_url = os.path.join(GAMEPLAY_IMAGE_FOLDER_PATH, f"gameplay_img_{gameplay_id}")
+        save_image_thread = threading.Thread(target=helpers.save_b64_to_png, args=(image_url,request.json["base64image"]))
+        save_image_thread.start()
+        jaccard_index = helpers.calculate_jaccard_index(database.get_action_units_for_gold(gold_id), action_units)
+        db_thread = threading.Thread(target=database.update_gameplay_image_and_offline_aus, args=(gameplay_id, image_url, action_units, jaccard_index, session_id))
+        db_thread.start()
+        return jsonify(actionUnits = action_units, jaccardIndex = jaccard_index)
+    else:
+        print("AU Detection pre-heated")
+        return jsonify(success = True)
 
 @app.route('/api/uploadOnlineResults', methods=["POST"])
 def upload_online_results():

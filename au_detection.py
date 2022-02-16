@@ -1,8 +1,6 @@
 import sys
 import cv2
-# import urllib.request as urlreq
 import os
-# import matplotlib.pyplot as plt
 import skimage
 import numpy as np
 import math
@@ -18,6 +16,12 @@ load_dotenv()
 
 FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 
+predictor = dlib.shape_predictor("./resources/shape_predictor_68_face_landmarks.dat")
+pca_model = joblib.load("./resources/hog_pca_all_emotio.joblib")
+classifier = joblib.load("./resources/svm_568.joblib")
+scaler = joblib.load("./resources/hog_scalar_aus.joblib")
+detector = dlib.get_frontal_face_detector() 
+
 def calculate_action_units_from_image_url(image_url):
     """Returns list of action units for image with filepath image_url"""
     return calculate_action_units(cv2.imread(image_url))
@@ -32,12 +36,6 @@ def calculate_action_units_from_base_64_image(base64image):
     return calculate_action_units(readb64(base64image))
 
 def calculate_action_units(image): 
-
-    predictor = dlib.shape_predictor("./resources/shape_predictor_68_face_landmarks.dat")
-    pca_model = joblib.load("./resources/hog_pca_all_emotio.joblib")
-    classifier = joblib.load("./resources/svm_568.joblib")
-    scaler = joblib.load("./resources/hog_scalar_aus.joblib")
-
     # Helper Functions
 
     def shape_to_np(shape, dtype="int"):
@@ -64,10 +62,8 @@ def calculate_action_units(image):
         sizeY =  lowerRightY - upperleftY
         centerX = (lowerrightX + upperleftX)/2
         centerY = (lowerRightY + upperleftY)/2
-
         offsetX = (centerX-sizeX/2)*image_width/sizeX
         offsetY = (centerY-sizeY/2)*image_height/sizeY
-
         point_x = point_x * image_width/sizeX - offsetX 
         point_y = point_y * image_height/sizeY - offsetY
         return (point_x,point_y)
@@ -76,17 +72,16 @@ def calculate_action_units(image):
         width, height = img.shape[:2]
         rotation = cv2.getRotationMatrix2D((width/2, height/2), angle, 1)
         rotated_img = cv2.warpAffine(img, rotation, (width, height))
-
         rotated_landmarks = np.asarray([np.dot(rotation, landmark.T) for landmark in landmarks])
         return rotated_img, rotated_landmarks
 
     # Detect face and landmarks with dlib
-    detector = dlib.get_frontal_face_detector() 
+    
     detect = detector(image,1)
 
     # print(detect)
 
-    shape=predictor(image,detect[0]) #the landmarks in another form
+    shape = predictor(image, detect[0]) #the landmarks in another form
     shape = shape_to_np(shape)
     rects = detector(image, 1) # the coordinates of the rectangles of the face
 
@@ -116,7 +111,7 @@ def calculate_action_units(image):
             break
             
     # offine_cropped_image = image[ y-iy:h, x-ix:w+iw]
-    offine_cropped_image = image[ y:h, x:w]
+    offine_cropped_image = image[y:h, x:w]
     offline_resized_cropped= cv2.resize(offine_cropped_image, (112,112), interpolation = cv2.INTER_AREA)
     # plt.imshow(offline_resized_cropped)
 
@@ -210,7 +205,7 @@ def calculate_action_units(image):
     # plt.imshow(rotated)
 
     offline_hogs, hogs_im = hog(rotated, orientations=8, pixels_per_cell=(8, 8),
-                        cells_per_block=(2, 2), visualize=True, multichannel=True) # --- check if 2 is correct! Before it was "multichannel=True" which is deprecated
+                        cells_per_block=(2, 2), visualize=True, channel_axis=2) # --- check if 2 is correct! Before it was "multichannel=True" which is deprecated
 
     scaled_hogs = scaler.fit_transform(offline_hogs.reshape(-1,1))[0:5408].reshape(1,-1)
     pca_transformed_frame = pca_model.transform(scaled_hogs)
@@ -223,9 +218,7 @@ def calculate_action_units(image):
     predictions_output = []
 
     au_array = [1,2,4,5,6,7,9,10,11,12,14,15,17,20,23,24,25,26,28,43]
-    for i in range(len(offline_pred_aus)):
-        if offline_pred_aus[i] ==1:
-            predictions_output.append(int(au_array[i]))
+    predictions_output = [au_array[i] for i in range(len(offline_pred_aus)) if offline_pred_aus[i]]
 
     return predictions_output
 
