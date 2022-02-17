@@ -1,31 +1,63 @@
-<link rel="stylesheet" href={{ url_for('static', filename='styles.css')}}>
-<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<!doctype html>
+<html lang="en" class="darkMode">
+<head>
+	<title>Game</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
+	<meta name="description" content="Facegame.org">
+	<link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap.css')}}>
+	<link rel="stylesheet" href={{ url_for('static', filename='icomoon/style.css')}}>
+	<link rel="stylesheet" href={{ url_for('static', filename='css/style.css')}}>
+	<link rel="stylesheet" href={{ url_for('static', filename='styles.css')}}>
+	<link rel="shortcut icon" href={{ url_for('static', filename='favicon.ico') }}>
 
-<h1>Game of Faces</h1>
+	<style>
+	@media screen and (min-width:1200px) {
+		.footer {position:absolute; bottom:0}
+	}
+	</style>
+</head>
+<body>
+	<h1 renkdegistir><span class="icon-hipster"></span> facegame</h1>
 
-<div class="centered">
-    <canvas id="canvas-image" width="480px" height="360px"></canvas>
-    <canvas id="canvas-snapshot" width="480px" height="360px"></canvas>
-    <video id="video-input" autoplay playsinline width="480px" height="360px"></video>
-</div>
+	<div class="container">
+		<div class="row centered">
+			<canvas id="canvas-image" width="480px" height="360px" style="margin:1px; border:1px solid red"></canvas>
+			<canvas id="canvas-snapshot" width="480px" height="360px" style="margin:1px; border:1px solid blue"></canvas>
+			<video id="video-input" autoplay playsinline width="480px" height="360px" style="margin:1px; border:1px solid green"></video>
+		</div>
 
-<h1 id="timer"></h1>
-<!-- <h1 id="status">Evaluating AUs...</h1> -->
-<h1 id="correct-aus"></h1>
-<h1 id="your-aus"></h1>
-<h1 id="jaccard-score"></h1>
+		<div class="text-center pb-4">
+			<h2 id="timer"></h2>
+			<!-- <h1 id="status">Evaluating AUs...</h1> -->
+			<h1 id="correct-aus"></h1>
+			<h1 id="your-aus"></h1>
+			<h1 id="jaccard-score"></h1>
 
-<div class="centered">
-    <select id="camera-select-box" name="camera_select_box">
-        <option value="" disabled selected></option>
-    </select>
-    <button id="new-game-btn" type="button">Start Game</button>
-    <button id="retry-btn" type="button" style="display: none">Retry (same image)</button>
-</div>
+			<div class="centered">
+				<div class="form-row align-items-center">
+					<div class="col-auto my-1">
+						<select id="camera-select-box" name="camera_select_box" class="form-control">
+							<option value="" disabled selected></option>
+						</select>
+					</div>
+					<div class="col-auto my-1">
+						<button id="retry-btn" type="button" class="btn btn-info">Retry</button>
+						<button id="new-game-btn" type="button" class="btn btn-success">New Game</button>	
+					</div>
+				</div>
+			</div>
 
-<div class="centered">
-    <a href="/attributions">Attributions</a> <br>
-</div> 
+			<div class="text-center mt-2">
+				<a href="/attributions" class="textLink">attributions</a> <br>
+			</div> 
+		</div> 
+
+	</div>
+
+	<div class="footer">&copy; 2022 - facegame</div>
+
+
 
 <!-- <a href="https://github.com/Actionable-Data-Science/facegame">Source Code on GitHub</a> -->
 
@@ -35,3 +67,5 @@
 <script type="text/javascript" src={{ url_for('static', filename='processing.js')}} charset="utf-8"></script>    
 <script type="text/javascript" src={{ url_for('static', filename='game.js')}} charset="utf-8"></script>
 
+</body>
+</html>

@@ -40,20 +40,36 @@ async function getImageThenStart(){
   startRound();
 }
 
+function changeViewToActiveGame(){
+  document.getElementById('new-game-btn').disabled = true;
+  document.getElementById('retry-btn').disabled = true;
+  document.getElementById("timer").style.display = "block";
+  document.getElementById("jaccard-score").style.display = "none";
+  document.getElementById("correct-aus").style.display = "none";
+  document.getElementById("your-aus").style.display = "none";
+  document.getElementById("canvas-snapshot").style.display = "none";
+  document.getElementById("video-input").style.display = "inline-block";
+}
+
+function changeViewToInactiveGame(){
+  document.getElementById("canvas-snapshot").style.display = "inline-block";
+  document.getElementById("video-input").style.display = "none";
+  document.getElementById('new-game-btn').disabled = false;
+  document.getElementById('retry-btn').disabled = false;
+}
+
 async function startRound(){
     isRunning = true;
-    document.getElementById("timer").style.display = "block";
-    hideScores();
-    showLiveVideo();
+    changeViewToActiveGame()
     setNewImage(`static/faces/${currentGameplayData.imageName}`);
     countdown(5);
 }
 
 async function finishRound(){
-    showSnapshot();
+    changeViewToInactiveGame()
     ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
     const snapshot = canvasSnapshot.toDataURL("image/png");
-    console.log("Current Gameplay ID:", currentGameplayData.gameplayId);
+    // console.log("Current Gameplay ID:", currentGameplayData.gameplayId);
     const t0 = performance.now();
     const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId, currentGameplayData.imageId, false);
     actionUnitData.then(auData => {
@@ -64,6 +80,17 @@ async function finishRound(){
 
     });
     generateStatus(snapshot, currentGameplayData.gameplayId, currentSessionId, false);
+}
+
+function showScores(auData){
+  document.getElementById("correct-aus").innerHTML = "Our picture: " + currentGameplayData.actionUnits;
+  document.getElementById("correct-aus").style.display = "block"; 
+  document.getElementById("timer").style.display = "none";
+  document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
+  document.getElementById("your-aus").style.display = "block";
+  document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(auData.jaccardIndex * 100) + "%";
+  document.getElementById("jaccard-score").style.display = "block";
+  document.getElementById("retry-btn").style.display = "inline-block";
 }
 
 function startNewGame(){
@@ -97,26 +124,6 @@ function setNewImage(imagePath){
     }
 }
 
-function showLiveVideo(){
-  document.getElementById("canvas-snapshot").style.display = "none";
-  document.getElementById("video-input").style.display = "inline-block";
-}
-
-function showSnapshot(){
-  document.getElementById("canvas-snapshot").style.display = "inline-block";
-  document.getElementById("video-input").style.display = "none";
-}
-
-function showScores(auData){
-  document.getElementById("correct-aus").innerHTML = "Our picture: " + currentGameplayData.actionUnits;
-  document.getElementById("correct-aus").style.display = "block"; 
-  document.getElementById("timer").style.display = "none";
-  document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
-  document.getElementById("your-aus").style.display = "block";
-  document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(auData.jaccardIndex * 100) + "%";
-  document.getElementById("jaccard-score").style.display = "block";
-  document.getElementById("retry-btn").style.display = "inline-block";
-}
 
 // function jaccard(auSet1, auSet2){
 //   const allAUs = mergeAndDeduplicate(auSet1, auSet2);
@@ -142,13 +149,6 @@ function mergeAndDeduplicate(arr1, arr2){
     }
   });
   return mergedAndDeduplicated;
-}
-
-function hideScores(){
-  document.getElementById("jaccard-score").style.display = "none";
-  // document.getElementById("status").style.display = "none";
-  document.getElementById("correct-aus").style.display = "none";
-  document.getElementById("your-aus").style.display = "none";
 }
 
 async function getGameplayData(){
@@ -241,7 +241,7 @@ async function getNewGameplayId(imageId){
   
   function gotDevices(mediaDevices) {
     const cameraSelectBox = document.getElementById("camera-select-box");
-    cameraSelectBox.innerHTML = '<option value="" disabled selected>Click to change webcam</option>';
+    cameraSelectBox.innerHTML = '<option value="" disabled selected>Choose Webcam</option>';
     cameraSelectBox.appendChild(document.createElement('option'));
     let count = 1;
     mediaDevices.forEach(mediaDevice => {
