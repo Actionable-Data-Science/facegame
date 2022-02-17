@@ -63,5 +63,5 @@ def save_automatic_aus():
     with open("static/faces/automatic_au_data.json", "w") as json_file:
         json.dump(automatic_image_aus, json_file)
 
-generate_missing()
+# generate_missing()
 # mini_deniz_b64 = load_mini_deniz()

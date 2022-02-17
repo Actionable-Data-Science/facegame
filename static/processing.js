@@ -41,10 +41,8 @@ async function generateStatus(img, gameplayId, sessionId, isPreheat){
         } else {
             statusVector.error = "face not fully in picture";
         }      
-        if (!isPreheat){
-            sendStatusVector(statusVector, gameplayId, sessionId); 
-            console.log("Status sent to server!");
-        }
+        sendStatusVector(statusVector, gameplayId, sessionId, isPreheat); 
+        console.log("Status sent to server!");
     }
 }
 

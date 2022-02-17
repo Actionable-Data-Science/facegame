@@ -178,9 +178,9 @@ async function requestActionUnits(image, gameplayId, sessionId, goldId, isPrehea
 //   return json;
 // }
 
-async function sendStatusVector(statusVector, gameplayId, sessionId){
+async function sendStatusVector(statusVector, gameplayId, sessionId, isPreheat){
   const apiURL = "/api/uploadOnlineResults";
-  const data = {"statusVector": statusVector, "gameplayId": gameplayId, "sessionId": sessionId};
+  const data = {"statusVector": statusVector, "gameplayId": gameplayId, "sessionId": sessionId, "isPreheat": isPreheat};
   let res = await fetch(apiURL, {method: "POST", mode: 'cors',
   headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
   return;
