@@ -15,3 +15,5 @@ commit_message
 *.jpg
 *.png
 *.db
+*.swp
+swp
