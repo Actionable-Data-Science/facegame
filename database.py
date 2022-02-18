@@ -121,6 +121,7 @@ def add_session(ip_address):
     VALUES (?, ?, ?);
     """
     session_id = uuid1().hex
+    print("New session with UUID", session_id)
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
     new_data = (ip_address, time, session_id)
     try:
@@ -201,6 +202,7 @@ def get_random_image_data(session_id, check_previous):
             output = cursor.fetchone()
         finally:
             lock.release()
+    print(output)
     if check_image_present(output[1]):
         return output[0], output[1], output[2]
     else:

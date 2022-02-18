@@ -24,15 +24,8 @@ async function preheatWebmodels(){
   generateStatus(snapshot, 0, 0, true);
 }
 
-
-// async function preheatAUDetection(){
-//   ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
-//   const snapshot = canvasSnapshot.toDataURL("image/png");
-//   requestActionUnits(snapshot, 0, 0, 0, true) 
-// }
-
 async function main(){
-  getSessionId().then(startWebcam().then(getImageThenStart));
+  getSessionId().then(sessionId => startWebcam().then(loadModels().then(models => preheatWebmodels()).then(getImageThenStart())));
 }
 
 async function getImageThenStart(){
@@ -124,31 +117,9 @@ function setNewImage(imagePath){
     }
 }
 
-
-// function jaccard(auSet1, auSet2){
-//   const allAUs = mergeAndDeduplicate(auSet1, auSet2);
-//   const intersectionAUList = auSet2.filter(x => auSet1.includes(x));
-//   const score = intersectionAUList.length / allAUs.length;
-//   return score;
-// }
-
 function retryGame(){
   getNewGameplayId(currentGameplayData.imageId);
   startRound();
-}
-
-
-function mergeAndDeduplicate(arr1, arr2){
-  var mergedAndDeduplicated = []
-  for (let x of arr1) {
-    mergedAndDeduplicated.push(x);
-  }
-  arr2.forEach(elem => {
-    if (mergedAndDeduplicated.includes(elem) == false){
-      mergedAndDeduplicated.push(elem);
-    }
-  });
-  return mergedAndDeduplicated;
 }
 
 async function getGameplayData(){
@@ -168,16 +139,6 @@ async function requestActionUnits(image, gameplayId, sessionId, goldId, isPrehea
   return json;
 }
 
-// async function preheatAUDetector(image, gameplayId, sessionId, goldId){
-//   const apiURL = "/api/preheatAUDetector";
-//   //const data = {"base64image": image, "gameplayId": gameplayId, "sessionId": sessionId, "goldId": goldId};
-//   const data = {}
-//   let res = await fetch(apiURL, {method: "POST", mode: 'cors',
-//   headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
-//   let json = await res.json();
-//   return json;
-// }
-
 async function sendStatusVector(statusVector, gameplayId, sessionId, isPreheat){
   const apiURL = "/api/uploadOnlineResults";
   const data = {"statusVector": statusVector, "gameplayId": gameplayId, "sessionId": sessionId, "isPreheat": isPreheat};
@@ -190,9 +151,10 @@ async function getSessionId(){
   const apiURL = "/api/getSessionId";
   let res = await fetch(apiURL, {method: "GET"});
   await res.json().then(json => {
-    // console.log("Session ID: ", json.sessionId);
+    console.log("Session ID: ", json.sessionId);
     currentSessionId = json.sessionId;
   });
+  return currentSessionId;
 }
 
 async function getNewGameplayId(imageId){

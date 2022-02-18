@@ -1,5 +1,3 @@
-loadModels()
-
 async function loadModels(){
     console.log("FaceAPI Models are loading")
     await faceapi.nets.faceLandmark68Net.loadFromUri('/static/models/');
