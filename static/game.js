@@ -36,6 +36,7 @@ async function getImageThenStart(){
 function changeViewToActiveGame(){
   document.getElementById('new-game-btn').disabled = true;
   document.getElementById('retry-btn').disabled = true;
+  document.getElementById("timer").innerHTML = "";
   document.getElementById("timer").style.display = "block";
   document.getElementById("jaccard-score").style.display = "none";
   document.getElementById("correct-aus").style.display = "none";
@@ -117,8 +118,8 @@ function setNewImage(imagePath){
     }
 }
 
-function retryGame(){
-  getNewGameplayId(currentGameplayData.imageId);
+async function retryGame(){
+  await getNewGameplayId(currentGameplayData.imageId);
   startRound();
 }
 
