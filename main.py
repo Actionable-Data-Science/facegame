@@ -9,6 +9,8 @@ import logging
 import os
 import database
 
+# import faulthandler; faulthandler.enable()
+
 app = Flask(__name__, static_folder="static")
 
 gunicorn_error_logger = logging.getLogger('gunicorn.error')
@@ -108,11 +110,13 @@ def upload_image():
     password = request.form.get('pass')
     if helpers.check_admin_credentials(user, password):
         imagefiles = request.files.getlist("imagefiles")
+        path_list = []
         for imagefile in imagefiles:
             imagepath = os.path.join(FACES_FOLDER_PATH, secure_filename(imagefile.filename))
             imagefile.save(imagepath)
-            thread = threading.Thread(target=helpers.calculate_gold_aus, args=(imagepath, user))
-            thread.start()
+            path_list.append(imagepath)
+        b_thread = threading.Thread(target=helpers.batch_generate_aus, args=(path_list,user))
+        b_thread.start()
         return "Success!"
     else:
         return "Wrong user credentials"

@@ -14,13 +14,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
-
 predictor = dlib.shape_predictor("./resources/shape_predictor_68_face_landmarks.dat")
 pca_model = joblib.load("./resources/hog_pca_all_emotio.joblib")
 classifier = joblib.load("./resources/svm_568.joblib")
 scaler = joblib.load("./resources/hog_scalar_aus.joblib")
-detector = dlib.get_frontal_face_detector() 
+
+FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 
 def calculate_action_units_from_image_url(image_url):
     """Returns list of action units for image with filepath image_url"""
@@ -37,6 +36,8 @@ def calculate_action_units_from_base_64_image(base64image):
 
 def calculate_action_units(image): 
     # Helper Functions
+
+    detector = dlib.get_frontal_face_detector() # moved here, performance hit 100ms, segmentation fault prevented
 
     def shape_to_np(shape, dtype="int"):
         coords = np.zeros((68, 2), dtype=dtype)

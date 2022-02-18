@@ -5,6 +5,7 @@ import base64
 import ast
 import au_detection
 import threading
+import concurrent.futures
 from time import sleep
 from random import choice
 from pathlib import Path
@@ -13,6 +14,7 @@ from database import add_gold_image, check_all_images_in_database
 from dotenv import load_dotenv
 from base64 import urlsafe_b64decode, b64encode
 from werkzeug.utils import secure_filename
+
 
 load_dotenv()
 
@@ -53,6 +55,11 @@ def generate_missing():
         imagepath = os.path.join(FACES_FOLDER_PATH, secure_filename(filename))
         thread = threading.Thread(target=calculate_gold_aus, args=(imagepath, "folder"))
         thread.start()
+
+def batch_generate_aus(path_list, user):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        for imagepath in path_list:
+            executor.submit(calculate_gold_aus, imagepath, user)
 
 def preheat_au_detection():
     print("Preheating AU detection")
