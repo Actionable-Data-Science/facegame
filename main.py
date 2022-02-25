@@ -83,7 +83,7 @@ def get_action_units():
     gold_id = request.json["goldId"]
     action_units = calculate_action_units_from_base_64_image(request.json["base64image"])
     if not is_preheat:
-        image_url = os.path.join(GAMEPLAY_IMAGE_FOLDER_PATH, f"gameplay_img_{gameplay_id}")
+        image_url = os.path.join(GAMEPLAY_IMAGE_FOLDER_PATH, f"gameplay_img_{gameplay_id}.png")
         save_image_thread = threading.Thread(target=helpers.save_b64_to_png, args=(image_url,request.json["base64image"]))
         save_image_thread.start()
         jaccard_index = helpers.calculate_jaccard_index(database.get_action_units_for_gold(gold_id), action_units)
