@@ -10,14 +10,14 @@ h2, h3, h4, h5 {font-weight:600}
 	h1[renkDegistir] {background:linear-gradient(92.7deg,#009900 -1.37%,#79c0ff 68.71%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
 
 
-.consent {width:650px; margin:0 auto; position:absolute; top:50%; left:50%; transform: translate(-50%, -50%);}
+.consent {width:650px; margin:0 auto; position:absolute; top:50%; left:50%; transform: translate(-50%, -50%); z-index:100;}
 	.consent h3 {display:flex; justify-content:center; margin-bottom:1.5rem}
 	.consent p {line-height:1.6; margin-bottom:1rem}
 	.consent button {display:block; margin:2rem auto; border:1px solid #090; background-color:#0c0; font-size:1.3rem; font-weight:600; color:#fff; padding:.5rem 2rem; border-radius:.3rem}
 	.consent button:hover, .consent button:active {background-color:#090;}
 	button {cursor:pointer}
 @media screen and (max-width:750px) {
-	.consent {width:85%}
+	.consent {width:85%; z-index:100;}
 }
 
 #your-scores{color: blue;}
@@ -54,8 +54,8 @@ video {margin:0.5rem}
 	body {background-color:#fff8 !important; position:relative !important}
 }
 
-.footer {background:url("../img/footer.png") no-repeat; width:100%; height:247px; line-height:247px; padding-top:3rem; text-align:center; font-weight:600; color:#fff;}
-.footer-noanim {position:absolute; bottom:0; width:100%; height:247px; line-height:247px; padding-top:3rem; text-align:center; font-weight:600; color:#fff;}
+.footer {background:url("../img/footer.png") no-repeat; width:100%; height:247px; line-height:247px; padding-top:3rem; text-align:center; font-weight:600; color:#fff; z-index:0;}
+.footer-noanim {position:absolute; bottom:0; width:100%; height:247px; line-height:247px; padding-top:3rem; text-align:center; font-weight:600; color:#fff; z-index:0;}
 
 
 .darkMode {background-color:#222 !important; color:#eee}
