@@ -10,6 +10,7 @@ async function generateStatus(img, gameplayId, sessionId, isPreheat){
     let statusVector = {
         emotions: "", // emotion
         landmarks: [], // list of lists of length 2 of length 68
+        absLandmarks: [],
         hogs: [], // list of 5408 
         gender: "",
         age: "",
@@ -27,6 +28,8 @@ async function generateStatus(img, gameplayId, sessionId, isPreheat){
         if (checkFullFaceInPicture(det._x, det._y, det._width, det._height, image.width, image.height)) {
             const resizedLandmarks = resizeLandmarks(resizedDetections.landmarks._positions, det);
             statusVector.landmarks = rotateLandmarks(resizedLandmarks, resizedDetections.angle.roll);
+            statusVector.absLandmarks = resizedDetections.landmarks._positions;
+            console.log("RD", resizedDetections);
             statusVector.emotions = resizedDetections.expressions;
             const maskedFace = await maskFace(statusVector.landmarks, image);
             statusVector.hogs = await getHogs(maskedFace);
@@ -40,6 +43,7 @@ async function generateStatus(img, gameplayId, sessionId, isPreheat){
             statusVector.error = "face not fully in picture";
         }      
         sendStatusVector(statusVector, gameplayId, sessionId, isPreheat); 
+        currentStatus = statusVector;
         console.log("Status sent to server!");
     }
 }

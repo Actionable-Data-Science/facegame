@@ -3,6 +3,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600;800&display=swap');
 body {font-family:'Poppins', sans-serif; font-weight:400; position:relative; display:contents; height:100%; width:100%}
 
+.licenses{white-space: pre-wrap;}
+.attributions{white-space: pre-wrap;}
+
+.canvas-layers { position:relative; width:480px; height:360px }
+.canvas-layers canvas { position:absolute; top:0; left:0 }
 
 h1{text-align:center; display:flex; justify-content:center; font-weight:800; letter-spacing:-1px}
 h2, h3, h4, h5 {font-weight:600}
@@ -26,7 +31,7 @@ h2, h3, h4, h5 {font-weight:600}
 .centered {display: flex; justify-content: center;}
 
 
-canvas {position:relative; background-color:#fffa; margin:0.5rem}
+canvas {position:relative; margin:0.5rem}
 video {margin:0.5rem}
 
 .ocean {height: 5%;width:100%;position:absolute;bottom:0;left:0; z-index:-1; background: #015871;}

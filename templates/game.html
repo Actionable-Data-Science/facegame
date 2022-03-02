@@ -25,8 +25,11 @@
 			<canvas id="canvas-snapshot" width="480px" height="360px" style="margin:1px; border:1px solid blue"></canvas>
 			<video id="video-input" autoplay playsinline width="480px" height="360px" style="margin:1px; border:1px solid green"></video> -->
 			<canvas id="canvas-image" width="480px" height="360px"></canvas>
-			<canvas id="canvas-snapshot" width="480px" height="360px"></canvas>
-			<video id="video-input" autoplay playsinline width="480px" height="360px"></video>
+			<div class="canvas-layers">
+				<canvas id="canvas-snapshot" width="480px" height="360px" style="z-index: -1;"></canvas>
+				<canvas id="canvas-heatmap" width="480px" height="360px"></canvas>
+				<video id="video-input" autoplay playsinline width="480px" height="360px"></video>
+			</div>
 		</div>
 
 		<div class="text-center pb-4">
@@ -66,7 +69,8 @@
 <script src="https://www.lactame.com/lib/image-js/0.21.2/image.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 <script type="text/javascript" src={{ url_for('static', filename='simple-hog.js')}} charset="utf-8"></script>
-<script type="text/javascript" src={{ url_for('static', filename='processing.js')}} charset="utf-8"></script>    
+<script type="text/javascript" src={{ url_for('static', filename='processing.js')}} charset="utf-8"></script>   
+<script type="text/javascript" src={{ url_for('static', filename='simpleheat.js')}} charset="utf-8"></script>    
 <script type="text/javascript" src={{ url_for('static', filename='game.js')}} charset="utf-8"></script>
 
 </body>
