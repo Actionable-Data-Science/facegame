@@ -6,8 +6,8 @@ body {font-family:'Poppins', sans-serif; font-weight:400; position:relative; dis
 .licenses{white-space: pre-wrap;}
 .attributions{white-space: pre-wrap;}
 
-.canvas-layers { position:relative; width:480px; height:360px }
-.canvas-layers canvas { position:absolute; top:0; left:0 }
+.canvas-layers {position:relative; width:480px; height:360px }
+.canvas-layers canvas { position:absolute; top:0;}
 
 h1{text-align:center; display:flex; justify-content:center; font-weight:800; letter-spacing:-1px}
 h2, h3, h4, h5 {font-weight:600}
@@ -31,8 +31,8 @@ h2, h3, h4, h5 {font-weight:600}
 .centered {display: flex; justify-content: center;}
 
 
-canvas {position:relative; margin:0.5rem}
-video {margin:0.5rem}
+canvas {position:relative;}
+/* video {} */
 
 .ocean {height: 5%;width:100%;position:absolute;bottom:0;left:0; z-index:-1; background: #015871;}
 .wave {background: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/85486/wave.svg") repeat-x; position: absolute;top: -198px;width: 6400px;height: 198px;animation: wave 27s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite;transform: translate3d(0, 0, 0);}

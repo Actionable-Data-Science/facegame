@@ -20,12 +20,14 @@
 	<h1 renkdegistir><span class="icon-hipster"></span> facegame</h1>
 
 	<div class="container">
-		<div class="row centered">
+		<div class="row">
 			<!-- <canvas id="canvas-image" width="480px" height="360px" style="margin:1px; border:1px solid red"></canvas>
 			<canvas id="canvas-snapshot" width="480px" height="360px" style="margin:1px; border:1px solid blue"></canvas>
 			<video id="video-input" autoplay playsinline width="480px" height="360px" style="margin:1px; border:1px solid green"></video> -->
-			<canvas id="canvas-image" width="480px" height="360px"></canvas>
-			<div class="canvas-layers">
+			<div class="col-md-6 col-sm-6">
+				<canvas id="canvas-image" width="480px" height="360px"></canvas>
+			</div>
+			<div class="canvas-layers col-md-6 col-sm-6">
 				<canvas id="canvas-snapshot" width="480px" height="360px" style="z-index: -1;"></canvas>
 				<canvas id="canvas-heatmap" width="480px" height="360px"></canvas>
 				<canvas id="canvas-video" width="480px" height="360px"></canvas>

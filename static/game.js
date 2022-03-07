@@ -55,10 +55,10 @@ heat.radius(8, 4); // setting point and blur radius (3, 2)
 
 let isRunning = false;
 
-main() // .then(setTimeout(preheatAUDetection, 1000));
+main()
 
 async function preheatWebmodels() {
-  ctxCanvasSnapshot.drawImage(canvasVideo, 0, 0, canvasVideo.width, canvasVideo.height);
+  ctxCanvasSnapshot.drawImage(video, 0, 0, video.width, video.height);
   const snapshot = canvasSnapshot.toDataURL("image/png");
   generateStatus(snapshot, 0, 0, true);
 }
@@ -76,7 +76,6 @@ async function getImageThenStart() {
 function showVideoOnCanvas() {
   var canvasVideo = document.getElementById("canvas-video");
   var ctxCanvasVideo = canvasVideo.getContext("2d");
-  // ctxCanvasVideo.scale(-1, 1);
 
   console.log(`CAM: w: ${videoWidth}, h: ${videoHeight}`);
 
@@ -90,9 +89,11 @@ function showVideoOnCanvas() {
   console.log(`CAM: x-Offset: ${x}, y-Offset: ${y}, ratio: ${ratio}`);
 
   video.addEventListener("play", update());
-
+  ctxCanvasVideo.scale(-1, 1);
   function update(){
-    ctxCanvasVideo.drawImage(video, x, y, targetWidth, targetHeight);
+    ctxCanvasVideo.translate(ctxCanvasVideo.width, 0);
+    
+    ctxCanvasVideo.drawImage(video, x * -1, y, targetWidth * -1, targetHeight);
     requestAnimationFrame(update);
   }
 }
