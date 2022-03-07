@@ -29,7 +29,6 @@ async function generateStatus(img, gameplayId, sessionId, isPreheat){
             const resizedLandmarks = resizeLandmarks(resizedDetections.landmarks._positions, det);
             statusVector.landmarks = rotateLandmarks(resizedLandmarks, resizedDetections.angle.roll);
             statusVector.absLandmarks = resizedDetections.landmarks._positions;
-            console.log("RD", resizedDetections);
             statusVector.emotions = resizedDetections.expressions;
             const maskedFace = await maskFace(statusVector.landmarks, image);
             statusVector.hogs = await getHogs(maskedFace);
