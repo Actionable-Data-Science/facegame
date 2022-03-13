@@ -88,7 +88,7 @@ def add_gold_image(image_url, uploaded_by):
     """
     gold_id = uuid1().hex
     time = datetime.now().strftime("%B %d, %Y %I:%M%p")
-    new_gold_image = (image_url, str(calculate_action_units_from_image_url(image_url)), AU_MODEL_ID, time, gold_id, uploaded_by)
+    new_gold_image = (image_url, str(calculate_action_units_from_image_url(image_url)[1]), AU_MODEL_ID, time, gold_id, uploaded_by)
     try: 
         lock.acquire(True)
         cursor.execute(sql_command, new_gold_image)

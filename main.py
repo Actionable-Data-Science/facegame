@@ -81,7 +81,7 @@ def get_action_units():
     gameplay_id = request.json["gameplayId"]
     session_id = request.json["sessionId"]
     gold_id = request.json["goldId"]
-    action_units = calculate_action_units_from_base_64_image(request.json["base64image"])
+    success, action_units, error = calculate_action_units_from_base_64_image(request.json["base64image"])
     if not is_preheat:
         image_url = os.path.join(GAMEPLAY_IMAGE_FOLDER_PATH, f"gameplay_img_{gameplay_id}.png")
         save_image_thread = threading.Thread(target=helpers.save_b64_to_png, args=(image_url,request.json["base64image"]))
@@ -89,7 +89,7 @@ def get_action_units():
         jaccard_index = helpers.calculate_jaccard_index(database.get_action_units_for_gold(gold_id), action_units)
         db_thread = threading.Thread(target=database.update_gameplay_image_and_offline_aus, args=(gameplay_id, image_url, action_units, jaccard_index, session_id))
         db_thread.start()
-        return jsonify(actionUnits = action_units, jaccardIndex = jaccard_index)
+        return jsonify(actionUnits = action_units, jaccardIndex = jaccard_index, success=success, errorMessage=error)
     else:
         print("AU Detection pre-heated")
         return jsonify(success = True)

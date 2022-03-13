@@ -27,6 +27,7 @@ h2, h3, h4, h5 {font-weight:600}
 
 #your-scores{color: blue;}
 #correct-scores{color: green;}
+#error-msg{color:red;}
 
 .centered {display: flex; justify-content: center;}
 

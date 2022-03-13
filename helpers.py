@@ -63,8 +63,7 @@ def batch_generate_aus(path_list, user):
 
 def preheat_au_detection():
     print("Preheating AU detection")
-    return au_detection.calculate_action_units_from_base_64_image(mini_deniz_b64)
-
+    au_detection.calculate_action_units_from_base_64_image(mini_deniz_b64)
 
 def save_automatic_aus():
     with open("static/faces/automatic_au_data.json", "w") as json_file:

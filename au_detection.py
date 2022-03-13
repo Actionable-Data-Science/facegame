@@ -80,9 +80,15 @@ def calculate_action_units(image):
     
     detect = detector(image,1)
 
-    # print(detect)
 
-    shape = predictor(image, detect[0]) #the landmarks in another form
+    try:
+        face1 = detect[0]
+    except IndexError:
+        success = False
+        error = "Face was not detected"
+        return success, [], error
+    
+    shape = predictor(image, face1) #the landmarks in another form
     shape = shape_to_np(shape)
     rects = detector(image, 1) # the coordinates of the rectangles of the face
 
@@ -221,5 +227,9 @@ def calculate_action_units(image):
     au_array = [1,2,4,5,6,7,9,10,11,12,14,15,17,20,23,24,25,26,28,43]
     predictions_output = [au_array[i] for i in range(len(offline_pred_aus)) if offline_pred_aus[i]]
 
-    return predictions_output
+
+    success = True
+    error = ""
+
+    return success, predictions_output, error
 

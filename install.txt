@@ -1,6 +1,6 @@
 ! Use a python virtual environment !
 
-Needed packages: uuid1 gunicorn wheel opencv-python python-dotenv urllib3 matplotlib pylab-sdk numpy dlib joblib scipy scikit-image scikit-learn==0.24.1 flask
+Needed packages: uuid1 gunicorn wheel cmake opencv-python python-dotenv urllib3 matplotlib pylab-sdk numpy dlib joblib scipy scikit-image scikit-learn==0.24.1 flask
 
 Needed resources (save in resources folder):
 

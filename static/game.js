@@ -90,9 +90,9 @@ function showVideoOnCanvas() {
 
   video.addEventListener("play", update());
   ctxCanvasVideo.scale(-1, 1);
-  function update(){
+  function update() {
     ctxCanvasVideo.translate(ctxCanvasVideo.width, 0);
-    
+
     ctxCanvasVideo.drawImage(video, x * -1, y, targetWidth * -1, targetHeight);
     requestAnimationFrame(update);
   }
@@ -118,7 +118,8 @@ function showVideoOnCanvas() {
 // }
 
 function changeViewToActiveGame() {
-  document.getElementById('canvas-heatmap').style.display = "none"
+  document.getElementById("error-msg").style.display = "none";
+  document.getElementById('canvas-heatmap').style.display = "none";
   document.getElementById('new-game-btn').disabled = true;
   document.getElementById('retry-btn').disabled = true;
   document.getElementById("timer").innerHTML = "";
@@ -168,14 +169,20 @@ async function finishRound() {
 }
 
 function showScores(auData) {
-  document.getElementById("correct-aus").innerHTML = "Our picture: " + currentGameplayData.actionUnits;
-  document.getElementById("correct-aus").style.display = "block";
   document.getElementById("timer").style.display = "none";
-  document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
-  document.getElementById("your-aus").style.display = "block";
-  document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(auData.jaccardIndex * 100) + "%";
-  document.getElementById("jaccard-score").style.display = "block";
-  document.getElementById("retry-btn").style.display = "inline-block";
+  if (auData.success) {
+    document.getElementById("correct-aus").innerHTML = "Our picture: " + currentGameplayData.actionUnits;
+    document.getElementById("correct-aus").style.display = "block";
+    document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
+    document.getElementById("your-aus").style.display = "block";
+    document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(auData.jaccardIndex * 100) + "%";
+    document.getElementById("jaccard-score").style.display = "block";
+  }
+  else {
+    document.getElementById("error-msg").innerHTML = auData.errorMessage;
+    document.getElementById("error-msg").style.display = "block";
+  }
+
 }
 
 function startNewGame() {
@@ -457,7 +464,7 @@ async function startWebcamChooser() {
       if (mediaDevice.kind === 'videoinput') {
         const option = document.createElement('option');
         option.value = mediaDevice.deviceId;
-        if (count === 1){
+        if (count === 1) {
           option.selected = true;
         }
         const label = mediaDevice.label || `Camera ${count++}`;
