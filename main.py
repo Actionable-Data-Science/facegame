@@ -84,22 +84,30 @@ def get_session_id():
 
 @app.route('/api/getActionUnits', methods=["POST"])
 def get_action_units():
-    is_preheat = request.json["isPreheat"]
-    gameplay_id = request.json["gameplayId"]
-    session_id = request.json["sessionId"]
-    gold_id = request.json["goldId"]
-    success, action_units, error = calculate_action_units_from_base_64_image(request.json["base64image"])
-    if not is_preheat:
-        image_url = os.path.join(GAMEPLAY_IMAGE_FOLDER_PATH, f"gameplay_img_{gameplay_id}.png")
-        save_image_thread = threading.Thread(target=helpers.save_b64_to_png, args=(image_url,request.json["base64image"]))
-        save_image_thread.start()
-        jaccard_index = helpers.calculate_jaccard_index(database.get_action_units_for_gold(gold_id), action_units)
-        db_thread = threading.Thread(target=database.update_gameplay_image_and_offline_aus, args=(gameplay_id, image_url, action_units, jaccard_index, session_id))
-        db_thread.start()
-        return jsonify(actionUnits = action_units, jaccardIndex = jaccard_index, success=success, errorMessage=error)
+    is_game = request.json["isGame"]
+    if is_game:
+
+        is_preheat = request.json["isPreheat"]
+        gameplay_id = request.json["gameplayId"]
+        session_id = request.json["sessionId"]
+        gold_id = request.json["goldId"]
+        success, action_units, error = calculate_action_units_from_base_64_image(request.json["base64image"])
+        if not is_preheat:
+            image_url = os.path.join(GAMEPLAY_IMAGE_FOLDER_PATH, f"gameplay_img_{gameplay_id}.png")
+            save_image_thread = threading.Thread(target=helpers.save_b64_to_png, args=(image_url,request.json["base64image"]))
+            save_image_thread.start()
+            jaccard_index = helpers.calculate_jaccard_index(database.get_action_units_for_gold(gold_id), action_units)
+            db_thread = threading.Thread(target=database.update_gameplay_image_and_offline_aus, args=(gameplay_id, image_url, action_units, jaccard_index, session_id))
+            db_thread.start()
+            return jsonify(actionUnits = action_units, jaccardIndex = jaccard_index, success=success, errorMessage=error)
+        else:
+            print("AU Detection pre-heated")
+
+            return jsonify(success = True)
     else:
-        print("AU Detection pre-heated")
-        return jsonify(success = True)
+        success, action_units, error = calculate_action_units_from_base_64_image(request.json["base64image"])
+        return jsonify(actionUnits = action_units, success=success, errorMessage=error)
+
 
 @app.route('/api/uploadOnlineResults', methods=["POST"])
 def upload_online_results():

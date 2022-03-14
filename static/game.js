@@ -68,7 +68,7 @@ async function finishRound() {
   ctxCanvasSnapshot.drawImage(canvasVideo, 0, 0);
   const snapshot = canvasSnapshot.toDataURL("image/png");
   const t0 = performance.now();
-  const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId, currentGameplayData.imageId, false);
+  const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId, currentGameplayData.imageId, false, true);
   actionUnitData.then(auData => {
     showScores(auData);
     showHeatmap(currentGameplayData.actionUnits, auData.actionUnits, canvasSnapshot);
@@ -165,20 +165,3 @@ async function getNewGameplayId(imageId) {
     currentGameplayData.gameplayId = json.gameplayId;
   });
 }
-
-function getFalseAUs(correctAUs, playerAUs) {
-  const falseAUs = [];
-  correctAUs.forEach(au => {
-    if (!(playerAUs.includes(au))) {
-      falseAUs.push(au);
-    }
-  })
-  playerAUs.forEach(au => {
-    if (!(correctAUs.includes(au))) {
-      falseAUs.push(au);
-    }
-  })
-  return falseAUs;
-}
-
-

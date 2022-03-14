@@ -33,9 +33,9 @@ function showVideoOnCanvas() {
     }
 }
 
-async function requestActionUnits(image, gameplayId, sessionId, goldId, isPreheat) {
+async function requestActionUnits(image, gameplayId, sessionId, goldId, isPreheat, isGame) {
     const apiURL = "/api/getActionUnits";
-    const data = { "base64image": image, "gameplayId": gameplayId, "sessionId": sessionId, "goldId": goldId, "isPreheat": isPreheat };
+    const data = { "base64image": image, "gameplayId": gameplayId, "sessionId": sessionId, "goldId": goldId, "isPreheat": isPreheat, "isGame": isGame };
     let res = await fetch(apiURL, {
         method: "POST", mode: 'cors',
         headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
@@ -114,5 +114,3 @@ async function startWebcamChooser() {
         });
     }
 }
-
-
