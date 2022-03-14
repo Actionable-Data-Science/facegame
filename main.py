@@ -86,7 +86,6 @@ def get_session_id():
 def get_action_units():
     is_game = request.json["isGame"]
     if is_game:
-
         is_preheat = request.json["isPreheat"]
         gameplay_id = request.json["gameplayId"]
         session_id = request.json["sessionId"]
@@ -106,6 +105,7 @@ def get_action_units():
             return jsonify(success = True)
     else:
         success, action_units, error = calculate_action_units_from_base_64_image(request.json["base64image"])
+        print("AUs", success, action_units, error)
         return jsonify(actionUnits = action_units, success=success, errorMessage=error)
 
 
