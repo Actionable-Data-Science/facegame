@@ -45,6 +45,13 @@ def send_game():
     else:
         return redirect(url_for("send_consent"))
 
+@app.route('/aus')
+def send_aus():
+    if request.cookies and request.cookies["facegameconsent"] == "True":
+        return render_template("aumirror.html")
+    else:
+        return redirect(url_for("send_consent"))
+
 @app.route("/admin")
 def send_admin():
     return render_template("admin-panel.html")
@@ -99,7 +106,7 @@ def upload_online_results():
     req = request.json
     status_vector = req["statusVector"]
     gameplay_id = req["gameplayId"]
-    database.update_gameplay_online_results(gameplay_id, status_vector["landmarks"], 
+    database.update_gameplay_online_results(gameplay_id, status_vector["landmarks"],
     status_vector["hogs"], status_vector["gender"],
     status_vector["age"], status_vector["emotions"], status_vector["faceBbox"], status_vector["imageDims"])
     return "Success"
@@ -123,4 +130,3 @@ def upload_image():
 
 if __name__ == "__main__":
     app.run()
-
