@@ -39,11 +39,12 @@
 		<div class="text-center pb-4">
 			<h2 id="timer"></h2>
 			<!-- <h1 id="status">Evaluating AUs...</h1> -->
+			<h1 id="jaccard-score"></h1>
 			<h1 id="error-msg"></h1>
 			<h1 id="correct-aus"></h1>
 			<h1 id="your-aus"></h1>
-			<h1 id="jaccard-score"></h1>
-
+			<h1 id="natural-language"></h1>
+			
 			<div class="centered">
 				<div class="form-row align-items-center">
 					<div class="col-auto my-1">
@@ -76,6 +77,8 @@
 <script type="text/javascript" src={{ url_for('static', filename='simple-hog.js')}} charset="utf-8"></script>
 <script type="text/javascript" src={{ url_for('static', filename='processing.js')}} charset="utf-8"></script>   
 <script type="text/javascript" src={{ url_for('static', filename='simpleheat/simpleheat.js')}} charset="utf-8"></script>    
+<script type="text/javascript" src={{ url_for('static', filename='feedictionary.js')}} charset="utf-8"></script>
+<script type="text/javascript" src={{ url_for('static', filename='description.js')}} charset="utf-8"></script>
 <script type="text/javascript" src={{ url_for('static', filename='heatmap.js')}} charset="utf-8"></script> 
 <script type="text/javascript" src={{ url_for('static', filename='game-components.js')}} charset="utf-8"></script>  
 <script type="text/javascript" src={{ url_for('static', filename='game.js')}} charset="utf-8"></script>

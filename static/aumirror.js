@@ -24,9 +24,13 @@ function displayAUs(auData){
     document.getElementById("your-aus").style.display = "inline-block";
     document.getElementById("error-msg").style.display = "none";
     document.getElementById("canvas-heatmap").style.display = "inline-block";
+    document.getElementById("natural-language").style.display = "inline-block";
     document.getElementById("your-aus").innerHTML = auData.actionUnits;
+    document.getElementById("natural-language").innerHTML = fee(auData.actionUnits);
+
   }  else {
     document.getElementById("error-msg").style.display = "inline-block";
+    document.getElementById("natural-language").style.display = "none";
     document.getElementById("your-aus").style.display = "none";
     document.getElementById("error-msg").innerHTML = auData.errorMessage;
   }

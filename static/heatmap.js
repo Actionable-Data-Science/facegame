@@ -45,7 +45,7 @@ function changeCanvasAlpha(canvas, alpha) {
 }
 
 async function showHeatmap(correctAUs, playerAUs, image) {
-  const falseAUs = getFalseAUs(correctAUs, playerAUs);
+  const falseAUs = getFalseAUsHeatmap(correctAUs, playerAUs);
   detection = await faceapi.detectSingleFace(image).withFaceLandmarks();
   const data = generateHeatmapData(falseAUs, detection.landmarks._positions);
   heat.data(data)
@@ -162,7 +162,7 @@ function getMiddle(listOfPoints) {
 }
 
 
-function getFalseAUs(correctAUs, playerAUs) {
+function getFalseAUsHeatmap(correctAUs, playerAUs) {
   const falseAUs = [];
   correctAUs.forEach(au => {
     if (!(playerAUs.includes(au))) {

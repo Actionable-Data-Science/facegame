@@ -38,6 +38,7 @@ function changeViewToActiveGame() {
   document.getElementById('retry-btn').disabled = true;
   document.getElementById("timer").innerHTML = "";
   document.getElementById("timer").style.display = "block";
+  document.getElementById("natural-language").style.display = "none";
   document.getElementById("jaccard-score").style.display = "none";
   document.getElementById("correct-aus").style.display = "none";
   document.getElementById("your-aus").style.display = "none";
@@ -49,6 +50,7 @@ function changeViewToInactiveGame() {
   document.getElementById("canvas-snapshot").style.display = "inline-block";
   document.getElementById('canvas-heatmap').style.display = "inline";
   document.getElementById("canvas-video").style.display = "none";
+  document.getElementById("natural-language").style.display = "inline-block";
   document.getElementById('new-game-btn').disabled = false;
   document.getElementById('retry-btn').disabled = false;
 }
@@ -88,6 +90,7 @@ function showScores(auData) {
     document.getElementById("your-aus").style.display = "block";
     document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(auData.jaccardIndex * 100) + "%";
     document.getElementById("jaccard-score").style.display = "block";
+    document.getElementById("natural-language").innerHTML = fee(auData.actionUnits, currentGameplayData.actionUnits);
   }
   else {
     document.getElementById("error-msg").innerHTML = auData.errorMessage;
