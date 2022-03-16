@@ -1,87 +1,100 @@
 <!doctype html>
 <html lang="en" class="darkMode">
+
 <head>
-	<title>facegame</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
-	<meta name="description" content="Facegame.org">
-	<link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap.css')}}>
-	<link rel="stylesheet" href={{ url_for('static', filename='icomoon/style.css')}}>
-	<link rel="stylesheet" href={{ url_for('static', filename='css/style.css')}}>
-	<link rel="shortcut icon" href={{ url_for('static', filename='favicon.ico') }}>
+    <title>facegame</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
+    <meta name="description" content="Facegame.org">
+    <link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap.css')}}>
+    <link rel="stylesheet" href={{ url_for('static', filename='icomoon/style.css')}}>
+    <link rel="stylesheet" href={{ url_for('static', filename='css/style.css')}}>
+    <link rel="shortcut icon" href={{ url_for('static', filename='favicon.ico') }}>
 
-	<style>
-	@media screen and (min-width:1200px) {
-		.footer {position:absolute; bottom:0}
-	}
-	</style>
+    <style>
+        @media screen and (min-width:1200px) {
+            .footer-noanim {
+                position: absolute;
+                bottom: 0
+            }
+        }
+    </style>
 </head>
+
 <body>
-	<h1 renkdegistir><span class="icon-hipster"></span> facegame</h1>
 
-	<div class="container">
-		<div class="row">
-			<!-- <canvas id="canvas-image" width="480px" height="360px" style="margin:1px; border:1px solid red"></canvas>
-			<canvas id="canvas-snapshot" width="480px" height="360px" style="margin:1px; border:1px solid blue"></canvas>
-			<video id="video-input" autoplay playsinline width="480px" height="360px" style="margin:1px; border:1px solid green"></video> -->
-			<div class="col-md-6 col-sm-6">
-				<canvas id="canvas-image" width="480px" height="360px"></canvas>
-			</div>
-			<div class="canvas-layers col-md-6 col-sm-6">
-				<canvas id="canvas-snapshot" width="480px" height="360px" style="z-index: -1;"></canvas>
-				<canvas id="canvas-heatmap" width="480px" height="360px"></canvas>
-				<canvas id="canvas-video" width="480px" height="360px"></canvas>
-				<video id="video-input" autoplay playsinline width="480px" height="360px" style="display: none;"></video>
-			</div>
-			<!-- <video id="video-input" autoplay playsinline width="480px" height="360px"></video> -->
-		</div>
+    <style>
+        html,
+        body
+    </style>
+    <div class="ocean">
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
 
-		<div class="text-center pb-4">
-			<h2 id="timer"></h2>
-			<!-- <h1 id="status">Evaluating AUs...</h1> -->
-			<h1 id="jaccard-score"></h1>
-			<h1 id="error-msg"></h1>
-			<h1 id="correct-aus"></h1>
-			<h1 id="your-aus"></h1>
-			<h1 id="natural-language"></h1>
-			
-			<div class="centered">
-				<div class="form-row align-items-center">
-					<div class="col-auto my-1">
-						<select id="camera-select-box" name="camera_select_box" class="form-control">
-							<!-- <option value="" disabled selected></option> -->
-						</select>
-					</div>
-					<div class="col-auto my-1">
-						<button id="retry-btn" type="button" class="btn btn-info">Retry</button>
-						<button id="new-game-btn" type="button" class="btn btn-success">New Game</button>	
-					</div>
-				</div>
-			</div>
+    <h1 renkdegistir><span class="icon-hipster"></span> facegame</h1>
 
-			<div class="text-center mt-2">
-				<a href="/attributions" class="textLink">attributions</a> <br>
-			</div> 
-		</div> 
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <canvas id="canvas-image" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
+            </div>
+            <div class="canvas-layers col-lg-6 col-md-12 col-sm-12">
+                <canvas id="canvas-snapshot" class="img-responsive img-rounded" width="480px" height="360px" style="z-index: -1;"></canvas>
+                <canvas id="canvas-heatmap" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
+                <canvas id="canvas-video" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
+                <video id="video-input" autoplay playsinline width="480px" height="360px" style="display: none;"></video>
+            </div>
+            <!-- <video id="video-input" autoplay playsinline width="480px" height="360px"></video> -->
+        </div>
 
-	</div>
+        <div class="text-center pb-4">
+            <h2 id="timer"></h2>
+            <!-- <h2 id="status">Evaluating AUs...</h2> -->
+            <h2 id="jaccard-score"></h2>
+            <h2 id="error-msg"></h2>
+            <h2 id="correct-aus"></h2>
+            <h2 id="your-aus"></h2>
+            <p id="natural-language"></p>
 
-	<div class="footer">&copy; 2022 - facegame</div>
+            <div class="centered">
+                <div class="form-row align-items-center">
+                    <div class="col-auto my-1">
+                        <select id="camera-select-box" name="camera_select_box" class="form-control">
+                            <!-- <option value="" disabled selected></option> -->
+                        </select>
+                    </div>
+                    <div class="col-auto my-1">
+                        <button id="retry-btn" type="button" class="btn btn-info">Retry</button>
+                        <button id="new-game-btn" type="button" class="btn btn-success">New Game</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-2">
+                <a href="/attributions" class="textLink">attributions</a> <br>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer-noanim">&copy; 2022 - facegame</div>
 
 
 
-<!-- <a href="https://github.com/Actionable-Data-Science/facegame">Source Code on GitHub</a> -->
+    <!-- <a href="https://github.com/Actionable-Data-Science/facegame">Source Code on GitHub</a> -->
 
-<script src="https://www.lactame.com/lib/image-js/0.21.2/image.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
-<script type="text/javascript" src={{ url_for('static', filename='simple-hog.js')}} charset="utf-8"></script>
-<script type="text/javascript" src={{ url_for('static', filename='processing.js')}} charset="utf-8"></script>   
-<script type="text/javascript" src={{ url_for('static', filename='simpleheat/simpleheat.js')}} charset="utf-8"></script>    
-<script type="text/javascript" src={{ url_for('static', filename='feedictionary.js')}} charset="utf-8"></script>
-<script type="text/javascript" src={{ url_for('static', filename='description.js')}} charset="utf-8"></script>
-<script type="text/javascript" src={{ url_for('static', filename='heatmap.js')}} charset="utf-8"></script> 
-<script type="text/javascript" src={{ url_for('static', filename='game-components.js')}} charset="utf-8"></script>  
-<script type="text/javascript" src={{ url_for('static', filename='game.js')}} charset="utf-8"></script>
+    <script src="https://www.lactame.com/lib/image-js/0.21.2/image.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='simple-hog.js')}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='processing.js')}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='simpleheat/simpleheat.js')}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='feedictionary.js')}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='description.js')}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='heatmap.js')}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='game-components.js')}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='game.js')}} charset="utf-8"></script>
 
 </body>
+
 </html>
