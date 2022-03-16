@@ -21,3 +21,4 @@ src/__pycache__/
 *.swp
 swp
 .ipynb_checkpoints/*
+todo

@@ -8,6 +8,11 @@ function auEncoding(listAu){
   return listAuEncoded;
 }
 
+function getRandomFromList(list){
+  const l = list.length;
+  return list[Math.round(Math.random() * (list.length - 1))];
+}
+
 function codeFromActive(listAuEncoded, listOfAUsToCode){
   let code = "";
   listOfAUsToCode.forEach(au => {
@@ -119,8 +124,12 @@ function faceExpressionToNaturalLanguage(listAu, askFor = 'description') {
     const lowerFaceOrbitalCode = codeFromActive(l, [23, 24, 28]);
     const orbitalInfo = feeDictionary["orbital"][lowerFaceOrbitalCode][askFor];
 
-    retVal = browInfo + cheekInfo + eyelidInfo + chinNoseInfo + lipsInfo + mouthInfo + horizontalInfo + obliqueInfo + orbitalInfo;
+    retVal = getRandomFromList(browInfo) + getRandomFromList(cheekInfo) + getRandomFromList(eyelidInfo) 
+    + getRandomFromList(chinNoseInfo) + getRandomFromList(lipsInfo) + getRandomFromList(mouthInfo) + 
+    getRandomFromList(horizontalInfo) + getRandomFromList(obliqueInfo) + getRandomFromList(orbitalInfo);
   }
   return retVal
 }
+
+
 
