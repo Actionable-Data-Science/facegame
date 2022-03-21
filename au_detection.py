@@ -212,7 +212,7 @@ def calculate_action_units(image):
     # plt.imshow(rotated)
 
     offline_hogs, hogs_im = hog(rotated, orientations=8, pixels_per_cell=(8, 8),
-                        cells_per_block=(2, 2), visualize=True, channel_axis=2) # --- check if 2 is correct! Before it was "multichannel=True" which is deprecated
+                        cells_per_block=(2, 2), visualize=True, multichannel=True) # --- check if 2 is correct! Before it was "multichannel=True" which is deprecated
 
     scaled_hogs = scaler.fit_transform(offline_hogs.reshape(-1,1))[0:5408].reshape(1,-1)
     pca_transformed_frame = pca_model.transform(scaled_hogs)
