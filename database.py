@@ -80,6 +80,20 @@ def create_tables_if_not_exist():
     finally:
         lock.release()
 
+    sql_command = """
+    CREATE TABLE IF NOT EXISTS TBL_BUG_REPORTS (
+    bug_id VARCHAR(32) PRIMARY KEY, 
+    bug_text VARCHAR(200),
+    user_agent VARCHAR(300),
+    date DATE
+    );"""
+
+    try: 
+        lock.acquire(True)
+        cursor.execute(sql_command)
+    finally:
+        lock.release()
+
 def add_gold_image(image_url, uploaded_by):
     """Adds gold image to TBL_IMAGES_GOLD, creating AU data for it automatically"""
     sql_command = """
@@ -255,6 +269,23 @@ def get_action_units_for_gold(gold_id):
     finally:
         lock.release()
     return ast.literal_eval(output)
+
+def add_bugreport(bug_text, user_agent):
+    """Adds bug report to TBL_BUG_REPORTS"""
+    sql_command = """ 
+    INSERT INTO TBL_BUG_REPORTS (bug_id, bug_text, user_agent, date) 
+    VALUES (?, ?, ?, ?);
+    """
+    time = datetime.now().strftime("%B %d, %Y %I:%M%p")
+    bug_id = uuid1().hex
+    new_data = (bug_id, bug_text, user_agent, time)
+    try:
+        lock.acquire(True)
+        cursor.execute(sql_command, new_data)
+    finally:
+        lock.release()
+    connection.commit()
+    return bug_id
 
 # def update_jaccard_score(gameplay_id, score):
 #     """Updates the jaccard score for gameplay with id gameplay_id to score"""

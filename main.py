@@ -8,6 +8,7 @@ import helpers
 import logging
 import os
 import database
+import datetime
 
 # import faulthandler; faulthandler.enable()
 
@@ -59,6 +60,10 @@ def send_aus():
 @app.route("/admin")
 def send_admin():
     return render_template("admin-panel.html")
+
+@app.route('/bugreport')
+def send_bug_report():
+    return render_template("report-error.html")
 
 
 @app.route('/api/getGameplayData', methods=["GET"])
@@ -140,6 +145,16 @@ def upload_image():
         return "Success!"
     else:
         return "Wrong user credentials"
+
+@app.route('/api/sendBugReport', methods=["POST"])
+def upload_bug_report():
+    user_agent = request.json["userAgent"]
+    time = datetime.datetime.now()
+    bug_description = request.json["bugDescription"]
+    bug_id = database.add_bugreport(bug_description, user_agent)
+    with open("logs/bugs.txt", "a") as bug_file:
+        bug_file.write(f"{bug_id}   {bug_description}   {user_agent}    {time}\n")
+    return jsonify(bugId = bug_id)
 
 if __name__ == "__main__":
     app.run()

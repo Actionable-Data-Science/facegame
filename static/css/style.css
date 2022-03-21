@@ -57,6 +57,10 @@ h1[renkDegistir] {
     -webkit-text-fill-color: transparent
 }
 
+p {
+    white-space: pre-wrap;
+}
+
 .container {
     z-index: 100;
 }
