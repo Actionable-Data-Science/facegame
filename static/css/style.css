@@ -35,6 +35,9 @@ body {
 .col-resp {
 	justify-content: center;
 }
+.row-resp{ 
+	justify-content: center;
+}
 
 h1 {
     text-align: center;
