@@ -137,6 +137,7 @@ canvas {
 
 /* video {} */
 
+/*
 .ocean {
     height: 5%;
     width: 100%;
@@ -185,7 +186,7 @@ canvas {
         transform: translate3d(0, 5px, 0);
     }
 }
-
+*/
 @media screen and (max-width:1200px) {
     body {
         background-color: #fff8 !important;
