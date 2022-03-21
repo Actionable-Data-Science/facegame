@@ -112,6 +112,15 @@ button {
         width: 85%;
         z-index: 100;
     }
+	
+	h1>span {
+    line-height: 1.0 !important;
+    margin-right: .5rem
+	}
+	h1 {
+
+    font-weight: 600;
+	}
 }
 
 #your-scores {
