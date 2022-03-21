@@ -115,11 +115,10 @@ button {
 	
 	h1>span {
     line-height: 1.0 !important;
-    margin-right: .5rem
+    /*margin-right: .5rem*/
 	}
 	h1 {
-
-    font-weight: 600;
+    font-weight: 400;
 	}
 }
 
@@ -133,6 +132,10 @@ button {
 
 #error-msg {
     color: red;
+}
+
+#camera-select-box{
+	max-width: 200px;
 }
 
 .centered {
