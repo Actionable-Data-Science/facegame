@@ -252,7 +252,7 @@ canvas {
       bottom:0;
       left:0;
       width:10px;
-      /*background:#18c89b;*/
+	  z-index: 9999;
 	  background:#00bf11;
       box-shadow:0 0 50px 2px #00ff41;
       clip-path:inset(0);
