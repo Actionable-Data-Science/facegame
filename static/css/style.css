@@ -23,8 +23,6 @@ body {
 
 .canvas-layers {
     position: relative;
-    width: 480px;
-    height: 360px
 }
 
 .canvas-layers canvas {
@@ -38,6 +36,7 @@ body {
 
 .row-resp {
     justify-content: center;
+    height: 400px;
 }
 
 h1 {
@@ -100,13 +99,6 @@ p {
 .button-centered {
     display: block;
     margin: 2rem auto;
-    /* border: 1px solid #090;
-    background-color: #0c0;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #fff;
-    padding: .5rem 2rem;
-    border-radius: .3rem */
 }
 
 @media screen and (max-width:750px) {
@@ -147,8 +139,14 @@ p {
 
 }
 
+.image-area {
+    height: 30%;
+}
+
 canvas {
-    position: relative;
+    position: absolute;
+    width: 100%;
+    height: auto;
 }
 
 /* video {} */
