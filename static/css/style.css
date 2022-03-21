@@ -51,10 +51,10 @@ h1>span {
 }
 
 h1[renkDegistir] {
-    background: linear-gradient(92.7deg, #009900 -1.37%, #79c0ff 68.71%);
+    /*background: linear-gradient(92.7deg, #009900 -1.37%, #79c0ff 68.71%);
     -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent
+    -webkit-text-fill-color: transparent*/
 }
 
 p {
