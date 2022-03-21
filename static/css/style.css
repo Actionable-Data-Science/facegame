@@ -243,3 +243,39 @@ canvas {
     color: #fff;
     border-bottom: 1px dotted #fff
 }
+
+/* SCANNER */
+.canvas-layers::before {
+      content:"";
+      position:absolute;
+      top:0;
+      bottom:0;
+      left:0;
+      width:10px;
+      /*background:#18c89b;*/
+	  background:#00bf11;
+      box-shadow:0 0 50px 2px #00ff41;
+      clip-path:inset(0);
+      animation:
+        x 2s ease-in-out infinite alternate,
+        y 4s   ease-in-out infinite;
+    }
+
+    @keyframes x {
+      to {
+        transform:translateX(-100%);
+        left:100%;
+      }
+    }
+
+    @keyframes y {
+       33% {
+         clip-path:inset(0 0 0 -100px);    
+       }
+       50% {
+         clip-path:inset(0 0 0 0);    
+       }
+       83%{
+         clip-path:inset(0 -100px 0 0); 
+       }
+    }
