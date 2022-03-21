@@ -9,7 +9,7 @@ body {
     display: contents;
     height: 100%;
     width: 100%;
-	
+
     justify-content: center;
 }
 
@@ -33,10 +33,11 @@ body {
 }
 
 .col-resp {
-	justify-content: center;
+    justify-content: center;
 }
-.row-resp{ 
-	justify-content: center;
+
+.row-resp {
+    justify-content: center;
 }
 
 h1 {
@@ -96,25 +97,16 @@ p {
     margin-bottom: 1rem
 }
 
-.consent button {
+.button-centered {
     display: block;
     margin: 2rem auto;
-    border: 1px solid #090;
+    /* border: 1px solid #090;
     background-color: #0c0;
     font-size: 1.3rem;
     font-weight: 600;
     color: #fff;
     padding: .5rem 2rem;
-    border-radius: .3rem
-}
-
-.consent button:hover,
-.consent button:active {
-    background-color: #090;
-}
-
-button {
-    cursor: pointer
+    border-radius: .3rem */
 }
 
 @media screen and (max-width:750px) {
@@ -122,14 +114,15 @@ button {
         width: 85%;
         z-index: 100;
     }
-	
-	h1>span {
-    line-height: 1.0 !important;
-    /*margin-right: .5rem*/
-	}
-	h1 {
-    font-weight: 400;
-	}
+
+    h1>span {
+        line-height: 1.0 !important;
+        /*margin-right: .5rem*/
+    }
+
+    h1 {
+        font-weight: 400;
+    }
 }
 
 #your-scores {
@@ -144,14 +137,14 @@ button {
     color: red;
 }
 
-#camera-select-box{
-	max-width: 200px;
+#camera-select-box {
+    max-width: 200px;
 }
 
 .centered {
     display: flex;
     justify-content: center;
-	
+
 }
 
 canvas {
