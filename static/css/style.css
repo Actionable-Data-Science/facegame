@@ -245,7 +245,7 @@ canvas {
 }
 
 /* SCANNER */
-.canvas-layers::before {
+.canvas-snapshot::before {
       content:"";
       position:absolute;
       top:0;
