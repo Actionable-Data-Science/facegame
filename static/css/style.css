@@ -30,11 +30,16 @@ body {
     top: 0;
 }
 
+
 .col-resp {
+	display: flex;
 	justify-content: center;
+	text-align: center;
 }
 .row-resp{ 
+	display: flex;
 	justify-content: center;
+	text-align: center;
 }
 
 h1 {
