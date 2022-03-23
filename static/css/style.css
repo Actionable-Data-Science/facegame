@@ -148,6 +148,10 @@ canvas {
         width: 85%;
         z-index: 100;
     }
+	
+}
+
+@media screen and (max-width:960px) {
 	.menu-title {
 		display: none;
 	}
