@@ -167,13 +167,15 @@ canvas {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 50px;
+    height: 30px;
     /*line-height: 50px;
     padding-top: 3rem;*/
     text-align: center;
     font-weight: 600;
     color: #fff;
 	background-color: #090;
+	z-index: -1;
+	vertical-align: bottom;
 }
 
 
