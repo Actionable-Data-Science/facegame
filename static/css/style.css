@@ -153,7 +153,7 @@ canvas {
 	}
 }
 
-@media screen and (min-width:751px) {
+@media screen and (min-width:961px) {
     body {
         /*background-color: #fff8 !important;
         position: relative !important*/
@@ -173,7 +173,6 @@ canvas {
     text-align: center;
     font-weight: 600;
     color: #fff;
-	background-color: #090;
 	z-index: -1;
 	vertical-align: bottom;
 }
