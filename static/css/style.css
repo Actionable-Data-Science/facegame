@@ -46,8 +46,13 @@ h1 {
     text-align: center;
     display: flex;
     justify-content: center;
-    font-weight: 800;
+    font-weight: 600;
     letter-spacing: -1px
+}
+
+h1>span {
+    line-height: 1.0 !important;
+    margin-right: .5rem
 }
 
 h2,
@@ -57,12 +62,9 @@ h5 {
     font-weight: 600
 }
 
-/*
-h1>span {
-    line-height: 1.0 !important;
-    margin-right: .5rem
-}
-*/
+
+
+
 
 p {
     white-space: pre-wrap;
