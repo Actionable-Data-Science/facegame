@@ -81,7 +81,7 @@ function showScores(auData) {
         document.getElementById("correct-aus").style.display = "block";
         document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
         document.getElementById("your-aus").style.display = "block";
-        document.getElementById("jaccard-score").innerHTML = "Jaccard Score: " + Math.round(auData.jaccardIndex * 100) + "%";
+        document.getElementById("jaccard-score").innerHTML = "Score: " + Math.round(auData.jaccardIndex * 100) + "%";
         document.getElementById("jaccard-score").style.display = "block";
         document.getElementById("natural-language").innerHTML = fee(auData.actionUnits, currentGameplayData.actionUnits);
     } else {

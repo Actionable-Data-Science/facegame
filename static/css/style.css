@@ -58,7 +58,7 @@ h5 {
 }
 
 h1>span {
-    line-height: 1.4 !important;
+    line-height: 1.0 !important;
     margin-right: .5rem
 }
 
@@ -70,7 +70,7 @@ p {
 .container {
     z-index: 100;
     justify-content: center;
-	min-width: 500px;
+	min-width: 510px;
 }
 
 .consent {
