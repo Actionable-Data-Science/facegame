@@ -34,60 +34,56 @@
 
     <h1 renkdegistir><span class="icon-hipster"></span> facegame</h1>
 
-    <div class="image-area">
-        <div class="container">
-            <div class="row row-resp">
-                <div class="col-resp col-lg-6 col-md-12 col-sm-12">
-                    <canvas id="canvas-image" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
-                </div>
-                <div class="col-resp canvas-layers col-lg-6 col-md-12 col-sm-12">
-                    <canvas id="canvas-snapshot" class="img-responsive img-rounded" width="480px" height="360px" style="z-index: -1;"></canvas>
-                    <canvas id="canvas-heatmap" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
-                    <canvas id="canvas-video" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
-                    <video id="video-input" autoplay playsinline width="480px" height="360px" style="display: none;"></video>
-                </div>
-                <!-- <video id="video-input" autoplay playsinline width="480px" height="360px"></video> -->
+    <div class="container">
+        <div class="row row-resp">
+            <div class="col-resp col-lg-6 col-md-12 col-sm-12">
+                <canvas id="canvas-image" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
             </div>
-        </div>
-    </div>
-	<BR>
-    <div class="text-center pb-4">
-
-        <div class="centered">
-            <div class="form-row align-items-center">
-                <div class="col-auto my-1">
-                    <select id="camera-select-box" name="camera_select_box" class="form-control">
-                        <!-- <option value="" disabled selected></option> -->
-                    </select>
-                </div>
-                <div class="col-auto my-1">
-                    <button id="retry-btn" type="button" class="btn btn-info">Retry</button>
-                    <button id="new-game-btn" type="button" class="btn btn-success">New Game</button>
-                </div>
+            <div class="col-resp canvas-layers col-lg-6 col-md-12 col-sm-12">
+                <canvas id="canvas-snapshot" class="img-responsive img-rounded" width="480px" height="360px" style="z-index: -1;"></canvas>
+                <canvas id="canvas-heatmap" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
+                <canvas id="canvas-video" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
+                <video id="video-input" autoplay playsinline width="480px" height="360px" style="display: none;"></video>
             </div>
-
-
-		
-		
+            <!-- <video id="video-input" autoplay playsinline width="480px" height="360px"></video> -->
         </div>
 
+        <div class="text-center pb-4">
 		
-        
+			<div class="centered">
+                <div class="form-row align-items-center">
+                    <div class="col-auto my-1">
+                        <select id="camera-select-box" name="camera_select_box" class="form-control">
+                            <!-- <option value="" disabled selected></option> -->
+                        </select>
+                    </div>
+                    <div class="col-auto my-1">
+                        <button id="retry-btn" type="button" class="btn btn-info">Retry</button>
+                        <button id="new-game-btn" type="button" class="btn btn-success">New Game</button>
+                    </div>
+                </div>
+				
+            </div>
+			
+            <h2 id="timer"></h2>
+            <!-- <h2 id="status">Evaluating AUs...</h2> -->
+            <h2 id="jaccard-score"></h2>
+			<p id="natural-language"></p>
+            <h2 id="error-msg"></h2>
+            <p id="correct-aus"></p>
+            <p id="your-aus"></p>
+            
+
+            
+
+            <div class="text-center mt-2">
+				<br><a href="/attributions" class="textLink">attributions</a> | <a href="/bugreport" class="textLink">report a bug</a> | &copy; 2022 - facegame<br>
+			</div>
+        </div>
+
     </div>
-	
-		<h2 id="timer"></h2>
-        <!-- <h2 id="status">Evaluating AUs...</h2> -->
-        <h2 id="jaccard-score"></h2>
-        <p id="natural-language"></p>
-        <h2 id="error-msg"></h2>
-        <p id="correct-aus"></p>
-        <p id="your-aus"></p>
 
-		<a href="/attributions" class="textLink">attributions</a> | <a href="/bugreport" class="textLink">report a bug</a> | &copy; 2022 - facegame
-		
-
-
-    <!--<div class="footer-noanim"></div>-->
+    <!--<div class="footer-noanim">&copy; 2022 - facegame</div>-->
 
 
 
