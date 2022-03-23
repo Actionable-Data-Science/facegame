@@ -119,7 +119,7 @@ button {
         width: 85%;
         z-index: 100;
     }
-	.logo-title {
+	.menu-title {
 		visibility: hidden;
 	}
 }
@@ -156,7 +156,7 @@ canvas {
         background-color: #fff8 !important;
         position: relative !important
     }
-	.logo-title {
+	.menu-title {
 		visibility: visible;
 	}
 }
