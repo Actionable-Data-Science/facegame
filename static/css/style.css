@@ -119,7 +119,7 @@ button {
         width: 85%;
         z-index: 100;
     }
-	h1.logo-title {
+	.logo-title {
 		visibility: hidden;
 	}
 }
@@ -156,18 +156,17 @@ canvas {
         background-color: #fff8 !important;
         position: relative !important
     }
-	h1.logo-title {
+	.logo-title {
 		visibility: visible;
 	}
 }
 
-/* .footer {background:url("../img/footer.png") no-repeat; width:100%; height:247px; line-height:247px; padding-top:3rem; text-align:center; font-weight:600; color:#fff; z-index:0;} */
 .footer-noanim {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 247px;
-    line-height: 247px;
+    height: 50px;
+    line-height: 50px;
     padding-top: 3rem;
     text-align: center;
     font-weight: 600;
