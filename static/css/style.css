@@ -70,6 +70,7 @@ p {
 .container {
     z-index: 100;
     justify-content: center;
+	min-width: 500px;
 }
 
 .consent {
@@ -119,7 +120,7 @@ button {
         width: 85%;
         z-index: 100;
     }
-	.menu-title {
+	.logo-title {
 		visibility: hidden;
 	}
 }
@@ -153,10 +154,10 @@ canvas {
 
 @media screen and (max-width:1200px) {
     body {
-        background-color: #fff8 !important;
-        position: relative !important
+        /*background-color: #fff8 !important;
+        position: relative !important*/
     }
-	.menu-title {
+	.logo-title {
 		visibility: visible;
 	}
 }
