@@ -115,16 +115,8 @@ button {
     cursor: pointer
 }
 
-@media screen and (max-width:750px) {
-    .consent {
-        width: 85%;
-        z-index: 100;
-    }
-	.logo-title {
-		visibility: hidden;
-	}
-}
 
+/*
 #your-scores {
     color: blue;
 }
@@ -135,7 +127,7 @@ button {
 
 #error-msg {
     color: red;
-}
+}*/
 
 #camera-select-box{
 	max-width: 200px;
@@ -151,18 +143,27 @@ canvas {
     position: relative;
 }
 
+@media screen and (max-width:750px) {
+    .consent {
+        width: 85%;
+        z-index: 100;
+    }
+	.menu-title {
+		visibility: hidden;
+	}
+}
 
 @media screen and (max-width:1200px) {
     body {
         /*background-color: #fff8 !important;
         position: relative !important*/
     }
-	.logo-title {
+	.menu-title {
 		visibility: visible;
 	}
 }
 
-.footer-noanim {
+.footer {
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -172,7 +173,7 @@ canvas {
     text-align: center;
     font-weight: 600;
     color: #fff;
-    z-index: 0;
+	background-color: #090;
 }
 
 
