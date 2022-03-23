@@ -151,13 +151,13 @@ canvas {
 	
 }
 
-@media screen and (max-width:960px) {
+@media screen and (max-width:991px) {
 	.menu-title {
 		display: none;
 	}
 }
 
-@media screen and (min-width:961px) {
+@media screen and (min-width:992px) {
     body {
         /*background-color: #fff8 !important;
         position: relative !important*/
