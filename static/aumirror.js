@@ -1,9 +1,7 @@
-const canvasVideo = document.getElementById("canvas-video");
 document.getElementById("canvas-snapshot").style.display = "inline-block";
-
-startWebcamChooser().then(loadModels());
-
 document.getElementById("snapshot-btn").addEventListener("click", startNewMirror);
+
+prepare();
 
 function startNewMirror() {
     clearDisplay();

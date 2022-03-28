@@ -6,10 +6,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
     <meta name="description" content="Facegame.org">
-    <link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap.css')}}>
-    <link rel="stylesheet" href={{ url_for('static', filename='icomoon/style.css')}}>
-    <link rel="stylesheet" href={{ url_for('static', filename='css/style.css')}}>
-    <link rel="shortcut icon" href={{ url_for('static', filename='favicon.ico') }}>
+    <link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap.css' )}}>
+    <link rel="stylesheet" href={{ url_for('static', filename='icomoon/style.css' )}}>
+    <link rel="stylesheet" href={{ url_for('static', filename='css/style.css' )}}>
+    <link rel="shortcut icon" href={{ url_for('static', filename='favicon.ico' ) }}>
 
     <style>
         @media screen and (min-width:1200px) {
@@ -34,11 +34,30 @@
 
     <h1 renkdegistir><span class="icon-hipster"></span> facegame</h1>
 
-    <div class="container">
+    <div id="splashscreen-content">
+        <div class="consent">
+            <h3>How it works</h3>
+            <p>When the game starts, we will show you an image of a random person. Your task is to mimic the facial
+                expressions of that person as closely as possible</p>
+            <p>The game is based on so called <em>Action Units</em>. If you want to learn more about action units, you
+                can click <em>here.</em></p>
+            <p>As soon as the difference in facial expressions was calculated, we highlight the differences in your
+                picture and give you a small text on how to improve.</p>
+            <p>In case you encounter any issues, please feel free to leave us a message.</p>
+
+            <p id="error-msg"></p>
+
+            <button id="allow-camera-btn" class="btn btn-primary button-centered">Enable Webcam</button>
+            <button id="start-btn" class="btn btn-primary button-centered" style="display:none">Start</button>
+        </div>
+    </div>
+
+    <div id="game-content" style="display: none;">
         <div class="row">
             <div class="canvas-layers col-md-6 col-sm-6">
                 <canvas id="canvas-video" width="480px" height="360px"></canvas>
-                <video id="video-input" autoplay playsinline width="480px" height="360px" style="display: none;"></video>
+                <video id="video-input" autoplay playsinline width="480px" height="360px"
+                    style="display: none;"></video>
             </div>
             <div class="canvas-layers col-md-6 col-sm-6">
                 <canvas id="canvas-snapshot" width="480px" height="360px" style="z-index: -1;"></canvas>
@@ -82,14 +101,17 @@
 
     <script src="https://www.lactame.com/lib/image-js/0.21.2/image.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
-    <script type="text/javascript" src={{ url_for('static', filename='simple-hog.js')}} charset="utf-8"></script>
-    <script type="text/javascript" src={{ url_for('static', filename='processing.js')}} charset="utf-8"></script>
-    <script type="text/javascript" src={{ url_for('static', filename='feedictionary.js')}} charset="utf-8"></script>
-    <script type="text/javascript" src={{ url_for('static', filename='description.js')}} charset="utf-8"></script>
-    <script type="text/javascript" src={{ url_for('static', filename='simpleheat/simpleheat.js')}} charset="utf-8"></script>
-    <script type="text/javascript" src={{ url_for('static', filename='heatmap.js')}} charset="utf-8"></script>
-    <script type="text/javascript" src={{ url_for('static', filename='game-components.js')}} charset="utf-8"></script>
-    <script type="text/javascript" src={{ url_for('static', filename='aumirror.js')}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='simple-hog.js' )}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='processing.js' )}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='feedictionary.js' )}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='description.js' )}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='simpleheat/simpleheat.js' )}}
+        charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='heatmap.js' )}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='game-components.js' )}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='cam.js' )}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='splashscreen.js' )}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='aumirror.js' )}} charset="utf-8"></script>
 
 </body>
 

@@ -62,14 +62,6 @@ h5 {
     font-weight: 600
 }
 
-
-
-
-
-p {
-    white-space: pre-wrap;
-}
-
 .container {
     z-index: 100;
     justify-content: center;

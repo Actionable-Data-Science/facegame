@@ -35,10 +35,6 @@ def send_home():
 def send_consent():
     return render_template("consent.html")
 
-@app.route('/splashscreen')
-def send_splashscreen():
-    return render_template("splashscreen.html")
-
 @app.route('/attributions')
 def send_attributions():
     return render_template("attributions.html")

@@ -6,6 +6,7 @@ var successCallback = function(error) {
     cameraButton.disabled = true;
     cameraButton.innerText = "Camera access granted"
     startButton.style.display = "block";
+    detectCameras();
 };
 
 var errorCallback = function(error) {
@@ -24,8 +25,13 @@ cameraButton.addEventListener("click", function() {
 });
 
 startButton.addEventListener("click", function() {
-    window.location.replace("/game");
+    document.getElementById("splashscreen-content").style.display = "none";
+    document.getElementById("game-content").style.display = "block";
 });
+
+async function prepare(){
+    getSessionId().then(sessionId => loadModels());
+}
 
 async function getCameraConsent() {
     navigator.mediaDevices.getUserMedia({

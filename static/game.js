@@ -13,11 +13,10 @@ document.getElementById("retry-btn").addEventListener("click", retryGame);
 
 let isRunning = false;
 
-main()
+prepare();
 
 async function main() {
-    startWebcamChooser();
-    getSessionId().then(sessionId => loadModels()).then(models => getImageThenStart());
+    getImageThenStart();
 }
 
 async function getImageThenStart() {
@@ -152,18 +151,6 @@ async function sendStatusVector(statusVector, gameplayId, sessionId, isPreheat) 
         body: JSON.stringify(data)
     });
     return;
-}
-
-async function getSessionId() {
-    const apiURL = "/api/getSessionId";
-    let res = await fetch(apiURL, {
-        method: "GET"
-    });
-    await res.json().then(json => {
-        console.log("Session ID: ", json.sessionId);
-        currentSessionId = json.sessionId;
-    });
-    return currentSessionId;
 }
 
 async function getNewGameplayId(imageId) {
