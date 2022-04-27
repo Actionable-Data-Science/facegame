@@ -7,6 +7,8 @@ venv/
 .venv
 .DS_STORE
 node_modules/*
+.vscode/*
+__pycache__/*
 gameplay_images/*
 !gameplay_images/.gitkeep
 static/faces/*
