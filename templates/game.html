@@ -6,6 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
     <meta name="description" content="Facegame.org">
+    <link rel="manifest" href={{ url_for('static', filename='manifest.webmanifest' )}}>
     <link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap.css' )}}>
     <link rel="stylesheet" href={{ url_for('static', filename='icomoon/style.css' )}}>
     <link rel="stylesheet" href={{ url_for('static', filename='css/style.css' )}}>
@@ -33,8 +34,7 @@
             <p id="error-msg"></p>
 
             <button id="allow-camera-btn" class="btn btn-primary button-centered">Enable Webcam</button>
-            <button id="start-btn" class="btn btn-primary button-centered" style="display:none">Start &nbsp; <span
-                    class="icon-thumbs-o-up"></span></button>
+            <button id="start-btn" class="btn btn-primary button-centered" style="display:none">Start &nbsp; <span class="icon-thumbs-o-up"></span></button>
         </div>
     </div>
 
@@ -45,13 +45,10 @@
                     <canvas id="canvas-image" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
                 </div>
                 <div class="col-resp canvas-layers col-lg-6 col-md-12 col-sm-12">
-                    <canvas id="canvas-snapshot" class="img-responsive img-rounded" width="480px" height="360px"
-                        style="z-index: -1;"></canvas>
-                    <canvas id="canvas-heatmap" class="img-responsive img-rounded" width="480px"
-                        height="360px"></canvas>
+                    <canvas id="canvas-snapshot" class="img-responsive img-rounded" width="480px" height="360px" style="z-index: -1;"></canvas>
+                    <canvas id="canvas-heatmap" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
                     <canvas id="canvas-video" class="img-responsive img-rounded" width="480px" height="360px"></canvas>
-                    <video id="video-input" autoplay playsinline width="480px" height="360px"
-                        style="display: none;"></video>
+                    <video id="video-input" autoplay playsinline width="480px" height="360px" style="display: none;"></video>
                 </div>
                 <!-- <video id="video-input" autoplay playsinline width="480px" height="360px"></video> -->
             </div>
@@ -75,11 +72,8 @@
 
                 <h2 id="timer"></h2>
                 <h2 id="jaccard-score"></h2>
-                <p id="natural-language"></p>
                 <h2 id="error-msg"></h2>
-                <p id="correct-aus"></p>
-                <p id="your-aus"></p>
-
+                <table id="prescription-table"> </table>
 
 
 
@@ -92,8 +86,7 @@
 
 
     </div>
-    <div class="footer"><a href="/attributions" class="textLink">attributions</a> | <a href="/bugreport"
-            class="textLink">report a bug</a> | &copy; 2022 - facegame</div>
+    <div class="footer"><a href="/attributions" class="textLink">attributions</a> | <a href="/bugreport" class="textLink">report a bug</a> | &copy; 2022 - facegame</div>
 
 
 
@@ -111,6 +104,7 @@
     <script type="text/javascript" src={{ url_for('static', filename='game-components.js' )}} charset="utf-8"></script>
     <script type="text/javascript" src={{ url_for('static', filename='cam.js' )}} charset="utf-8"></script>
     <script type="text/javascript" src={{ url_for('static', filename='splashscreen.js' )}} charset="utf-8"></script>
+    <script type="text/javascript" src={{ url_for('static', filename='visualization.js' )}} charset="utf-8"></script>
     <script type="text/javascript" src={{ url_for('static', filename='game.js' )}} charset="utf-8"></script>
 
 </body>

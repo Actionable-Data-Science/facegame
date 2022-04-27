@@ -8,6 +8,11 @@ let currentGameplayData;
 let currentSessionId;
 let currentStatus;
 
+const displaySize = {
+    width: canvasSnapshot.width,
+    height: canvasSnapshot.height
+};
+
 document.getElementById("new-game-btn").addEventListener("click", startNewGame);
 document.getElementById("retry-btn").addEventListener("click", retryGame);
 
@@ -31,11 +36,9 @@ function changeViewToActiveGame() {
     document.getElementById('retry-btn').disabled = true;
     document.getElementById("timer").innerHTML = "";
     document.getElementById("timer").style.display = "block";
-    document.getElementById("natural-language").innerHTML = "";
     document.getElementById("jaccard-score").innerHTML = "";
-    document.getElementById("correct-aus").innerHTML = "";
-    document.getElementById("your-aus").innerHTML = "";
     document.getElementById("canvas-snapshot").style.display = "none";
+    document.getElementById("prescription-table").innerHTML = "";
     document.getElementById("canvas-video").style.display = "inline-block";
 }
 
@@ -63,9 +66,14 @@ async function finishRound() {
     const snapshot = canvasSnapshot.toDataURL("image/png");
     const t0 = performance.now();
     const actionUnitData = requestActionUnits(snapshot, currentGameplayData.gameplayId, currentSessionId, currentGameplayData.imageId, false, true);
+    const detections = await faceapi.detectSingleFace(canvasSnapshot).withFaceLandmarks();
+    const resizedDetections = faceapi.resizeResults(detections, displaySize);
+    const landmarks = resizedDetections.landmarks._positions;
     actionUnitData.then(auData => {
+        booked = [];
         showScores(auData);
         showHeatmap(currentGameplayData.actionUnits, auData.actionUnits, canvasSnapshot);
+        drawAUs(canvasSnapshot, currentGameplayData.actionUnits, auData.actionUnits, landmarks, false);
         const t1 = performance.now();
         const timeToComplete = t1 - t0;
         console.log("Time between image sent and AUs received: ", timeToComplete, "ms");
@@ -76,13 +84,9 @@ async function finishRound() {
 function showScores(auData) {
     document.getElementById("timer").style.display = "none";
     if (auData.success) {
-        document.getElementById("correct-aus").innerHTML = "Our picture: " + currentGameplayData.actionUnits;
-        document.getElementById("correct-aus").style.display = "block";
-        document.getElementById("your-aus").innerHTML = "Your picture: " + auData.actionUnits;
-        document.getElementById("your-aus").style.display = "block";
         document.getElementById("jaccard-score").innerHTML = "Score: " + Math.round(auData.jaccardIndex * 100) + "%";
         document.getElementById("jaccard-score").style.display = "block";
-        document.getElementById("natural-language").innerHTML = fee(auData.actionUnits, currentGameplayData.actionUnits);
+        document.getElementById("prescription-table").innerHTML = generatePrescriptionTable(auData.actionUnits, currentGameplayData.actionUnits);
     } else {
         document.getElementById("error-msg").innerHTML = auData.errorMessage;
         document.getElementById("error-msg").style.display = "block";

@@ -10,8 +10,6 @@ ctxCanvasVideo.scale(-1, 1);
 // let videoHeight;
 let streamRunning = false;
 
-console.log("HI FROM CAM");
-
 const detectCameras = async () => { // detecting all camera devices and putting them into the select (drop down menu)
     console.log("Detecting cameras");
     const allDevices = await navigator.mediaDevices.enumerateDevices();
@@ -19,28 +17,33 @@ const detectCameras = async () => { // detecting all camera devices and putting 
     const options = videoDevices.map(videoDevice => {
         return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
     });
-    cameraMenu.innerHTML = options.join('');
+    cameraMenu.innerHTML = `<option value="0" disabled selected>Choose Camera</option>` + options.join('');
 
-};
-
-const startStream = async (constraints) => {
-    console.log("Starting stream");
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    handleStream(stream);
 };
 
 const handleStream = (stream) => {
     console.log("Handling stream");
     video.srcObject = stream;
+    console.log(stream.getTracks());
     const videoProps = stream.getTracks()[0].getSettings();
+    console.log(stream);
     videoWidth = videoProps.width;
     videoHeight = videoProps.height;
+    console.log(videoProps);
     // play.classList.add('d-none');
     // pause.classList.remove('d-none');
     // screenshot.classList.remove('d-none');
     streamRunning = true;
     showVideoOnCanvas(videoWidth, videoHeight);
 };
+
+const startStream = async (constraints) => {
+    console.log("Starting stream");
+    navigator.mediaDevices.getUserMedia(constraints).then(stream => handleStream(stream));
+    // handleStream(stream);
+};
+
+
 
 // async function enumerateMediaDevices() {
 //     const devices = await navigator.mediaDevices.enumerateDevices();
@@ -77,8 +80,9 @@ function showVideoOnCanvas(videoWidth, videoHeight) {
     console.log(`CAM: w: ${videoWidth}, h: ${videoHeight}`);
 
     const ratio = videoWidth / videoHeight;
-    const targetWidth = videoWidth / ratio;
-    const targetHeight = videoHeight / ratio;
+    const ratio2 = ratio > 1 ? 360 / videoHeight : 480 / videoWidth;
+    const targetWidth = videoWidth * ratio2;
+    const targetHeight = videoHeight * ratio2;
     const y = (canvasVideo.height - targetHeight) / 2;
     const x = (canvasVideo.width - targetWidth) / 2;
 
@@ -86,7 +90,7 @@ function showVideoOnCanvas(videoWidth, videoHeight) {
     console.log(`CAM: x-Offset: ${x}, y-Offset: ${y}, ratio: ${ratio}`);
 
     video.addEventListener("play", update);
-    
+
     function update() {
         ctxCanvasVideo.translate(ctxCanvasVideo.width, 0);
 
@@ -94,16 +98,3 @@ function showVideoOnCanvas(videoWidth, videoHeight) {
         requestAnimationFrame(update);
     }
 }
-
-if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) { // check if API is available
-    console.log("getUserMedia available");
-    const constraints = { video: { facingMode: 'user' } };
-    navigator.mediaDevices.getUserMedia({ video: true });
-    startStream(constraints);
-    
-} else {
-    console.log("Webcam: Fatal Error");
-}
-
-
-

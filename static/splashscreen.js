@@ -2,11 +2,18 @@ const cameraButton = document.getElementById("allow-camera-btn");
 const errorMessageElem = document.getElementById("error-msg");
 const startButton = document.getElementById("start-btn");
 
+const constraints = {
+    video: {
+        facingMode: 'user'
+    }
+};
+
 var successCallback = function(error) {
     cameraButton.disabled = true;
     cameraButton.innerText = "Camera access granted"
     startButton.style.display = "block";
     detectCameras();
+    startStream(constraints);
 };
 
 var errorCallback = function(error) {
@@ -29,7 +36,7 @@ startButton.addEventListener("click", function() {
     document.getElementById("game-content").style.display = "block";
 });
 
-async function prepare(){
+async function prepare() {
     getSessionId().then(sessionId => loadModels());
 }
 
