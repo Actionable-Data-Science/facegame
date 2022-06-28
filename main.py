@@ -8,6 +8,7 @@ import helpers
 import logging
 import os
 import database
+import base64
 import datetime
 
 # import faulthandler; faulthandler.enable()
