@@ -152,5 +152,15 @@ def upload_bug_report():
         bug_file.write(f"{bug_id}   {bug_description}   {user_agent}    {time}\n")
     return jsonify(bugId = bug_id)
 
+@app.route('/api/getNewTargetImage', methods=["GET"]) # for the facegame app
+def get_new_target_image():
+    random_image_data = database.get_random_image_data(77777, False)
+    random_filename = random_image_data[1].split("/")[-1]
+    random_image_aus = ast.literal_eval(random_image_data[2])
+    with open("static/faces/" + random_filename, "rb") as image:
+        random_image = base64.b64encode(image.read()).decode('ascii')
+    return jsonify(targetAUs = random_image_aus, image = random_image)
+
+
 if __name__ == "__main__":
     app.run()
