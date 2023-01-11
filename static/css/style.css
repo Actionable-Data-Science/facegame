@@ -1,94 +1,92 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600;800&display=swap");
 
 body {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    position: relative;
-    display: contents;
-    height: 100%;
-    width: 100%;
-	
-    justify-content: center;
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  position: relative;
+  display: contents;
+  height: 100%;
+  width: 100%;
+
+  justify-content: center;
 }
 
 .licenses {
-    white-space: pre-wrap;
+  white-space: pre-wrap;
 }
 
 .attributions {
-    white-space: pre-wrap;
+  white-space: pre-wrap;
 }
 
 .canvas-layers {
-    position: relative;
-    width: 480px;
-    height: 360px
+  position: relative;
+  width: 480px;
+  height: 360px;
 }
 
 .canvas-layers canvas {
-    position: absolute;
-    top: 0;
+  position: absolute;
+  top: 0;
 }
-
 
 .col-resp {
-	display: flex;
-	justify-content: center;
-	text-align: center;
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
-.row-resp{ 
-	display: flex;
-	justify-content: center;
-	text-align: center;
+.row-resp {
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
 
 h1 {
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    font-weight: 600;
-    letter-spacing: -1px
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  font-weight: 600;
+  letter-spacing: -1px;
 }
 
-h1>span {
-    line-height: 1.0 !important;
-    margin-right: .5rem
+h1 > span {
+  line-height: 1 !important;
+  margin-right: 0.5rem;
 }
 
 h2,
 h3,
 h4,
 h5 {
-    font-weight: 600
+  font-weight: 600;
 }
 
 .container {
-    z-index: 100;
-    justify-content: center;
-	min-width: 510px;
+  z-index: 100;
+  justify-content: center;
+  min-width: 510px;
 }
 
 .consent {
-    width: 650px;
-    margin: 0 auto;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 100;
+  width: 650px;
+  margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
 }
 
 .consent h3 {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.5rem
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
 .consent p {
-    line-height: 1.6;
-    margin-bottom: 1rem
+  line-height: 1.6;
+  margin-bottom: 1rem;
 }
-
 
 /*
 #your-scores {
@@ -103,81 +101,78 @@ h5 {
     color: red;
 }*/
 
-#camera-select-box{
-	max-width: 200px;
+#camera-select-box {
+  max-width: 200px;
 }
 
 .centered {
-    display: flex;
-    justify-content: center;
-	
+  display: flex;
+  justify-content: center;
 }
 
 .button-centered {
-    display: block;
-    margin: 2rem auto;
+  display: block;
+  margin: 2rem auto;
 }
-
 
 canvas {
-    position: relative;
+  position: relative;
 }
 
-@media screen and (max-width:750px) {
-    .consent {
-        width: 85%;
-        z-index: 100;
-    }
-	
+@media screen and (max-width: 750px) {
+  .consent {
+    width: 85%;
+    z-index: 100;
+  }
 }
 
-@media screen and (max-width:991px) {
-	.menu-title {
-		display: none;
-	}
+@media screen and (max-width: 991px) {
+  .menu-title {
+    display: none;
+  }
 }
 
-@media screen and (min-width:992px) {
-    body {
-        /*background-color: #fff8 !important;
+@media screen and (min-width: 992px) {
+  body {
+    /*background-color: #fff8 !important;
         position: relative !important*/
-    }
-	.menu-title {
-		display: block;
-	}
+  }
+  .menu-title {
+    display: block;
+  }
 }
 
 .footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: 30px;
-    /*line-height: 50px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 30px;
+  /*line-height: 50px;
     padding-top: 3rem;*/
-    text-align: center;
-    font-weight: 600;
-    color: #fff;
-	vertical-align: bottom;
+  text-align: center;
+  font-weight: 600;
+  color: #fff;
+  background-color: black;
+  vertical-align: bottom;
 }
 
-
 .darkMode {
-    background-color: #222 !important;
-    color: #eee
+  background-color: #222 !important;
+  color: #eee;
 }
 
 .darkMode h2,
 .darkmode .consent h3 {
-    color: #fff !important
+  color: #fff !important;
 }
 
 .darkMode a.textLink {
-    color: #2c76d3;
-    text-decoration: none;
-    border-bottom: 1px dotted #2c76d3
+  color: #2c76d3;
+  text-decoration: none;
+  border-bottom: 1px dotted #2c76d3;
 }
 
 .darkMode a.textLink:hover {
-    color: #fff;
-    border-bottom: 1px dotted #fff
+  color: #fff;
+  border-bottom: 1px dotted #fff;
 }
