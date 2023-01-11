@@ -11,6 +11,10 @@ body {
   justify-content: center;
 }
 
+#prescription-table {
+  margin: 0 auto;
+}
+
 .licenses {
   white-space: pre-wrap;
 }
