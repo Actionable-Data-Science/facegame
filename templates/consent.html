@@ -1,47 +1,67 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" class="darkMode">
-
-<head>
+  <head>
     <title>Consent</title>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
-    <meta name="description" content="Facegame.org">
-    <link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap.css')}}>
-    <link rel="stylesheet" href={{ url_for('static', filename='icomoon/style.css')}}>
-    <link rel="stylesheet" href={{ url_for('static', filename='css/style.css')}}>
-    <link rel="shortcut icon" href={{ url_for('static', filename='favicon.ico') }}>
-</head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1"
+    />
+    <meta name="description" content="Facegame.org" />
+    <link rel="stylesheet" href={{ url_for('static',
+    filename='css/bootstrap.css')}}> <link rel="stylesheet" href={{
+    url_for('static', filename='icomoon/style.css')}}> <link rel="stylesheet"
+    href={{ url_for('static', filename='css/style.css')}}> <link rel="shortcut
+    icon" href={{ url_for('static', filename='favicon.ico') }}>
+  </head>
 
-<body>
-
+  <body>
     <style>
-        html,
-        body {
-            overflow: hidden
-        }
+      html,
+      body {
+        overflow: hidden;
+      }
     </style>
     <div class="ocean">
-        <div class="wave"></div>
-        <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
     </div>
 
     <div class="consent">
-        <h1 renkdegistir><span class="icon-hipster"></span> facegame</h1>
-        <h3>Welcome to the game of faces!</h3>
-        <p>In this game, your task is to mimic the shown picture as closely as possible. Once the timer reaches zero, your image is transferred to the server for evaluation. Please click the button below to confirm that you have understood this and that you agree.</p>
-        <p><em>* We store this information in a cookie so that you don't need to do this again.</em></p>
-        <button onclick="storeConsentCookie()" class="btn btn-primary button-centered">OK</button>
+      <h1 renkdegistir><span class="icon-hipster"></span> facegame</h1>
+      <h3>Welcome to the game of faces!</h3>
+      <p>
+        In this game, your task is to mimic the shown picture as closely as
+        possible. Once the timer reaches zero, your image is transferred to the
+        server for evaluation. Please click the button below to confirm that you
+        have understood this and that you agree.
+      </p>
+      <p>
+        <em
+          >* We store this information in a cookie so that you don't need to do
+          this again.</em
+        >
+      </p>
+      <button
+        onclick="storeConsentCookie()"
+        class="btn btn-primary button-centered"
+      >
+        OK
+      </button>
     </div>
 
-    <div class="footer-noanim">&copy; 2022 - facegame</div>
+    <div class="footer">
+      <a href="/attributions" class="textLink">attributions</a> |
+      <a href="/bugreport" class="textLink">report a bug</a> | &copy; 2022 -
+      facegame
+    </div>
 
     <script>
-        function storeConsentCookie() {
-            document.cookie = "facegameconsent=True";
-            console.log("Consent given - cookie set");
-            window.location.replace("/game");
-        }
+      function storeConsentCookie() {
+        document.cookie = "facegameconsent=True";
+        console.log("Consent given - cookie set");
+        window.location.replace("/game");
+      }
     </script>
-</body>
-
+  </body>
 </html>
