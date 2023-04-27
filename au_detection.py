@@ -12,7 +12,7 @@ from skimage.feature import hog
 from base64 import b64decode
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv("facegame_data/.env")
 
 predictor = dlib.shape_predictor("./resources/shape_predictor_68_face_landmarks.dat")
 pca_model = joblib.load("./resources/hog_pca_all_emotio.joblib")

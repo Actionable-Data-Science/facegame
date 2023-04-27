@@ -1,3 +1,4 @@
+from directory_manager import prepare_dirs
 from flask import Flask, request, send_from_directory, render_template, redirect, jsonify, url_for
 from au_detection import calculate_action_units_from_base_64_image
 from werkzeug.utils import secure_filename
@@ -15,12 +16,14 @@ import datetime
 
 app = Flask(__name__, static_folder="static")
 
+prepare_dirs()
+
 gunicorn_error_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers.extend(gunicorn_error_logger.handlers)
 app.logger.setLevel(logging.DEBUG)
 app.logger.debug('Server started')
 
-load_dotenv()
+load_dotenv("facegame_data/.env")
 
 FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 GAMEPLAY_IMAGE_FOLDER_PATH = os.environ["GAMEPLAY_IMAGE_FOLDER_PATH"]
@@ -164,4 +167,4 @@ def get_new_target_image():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')

@@ -1,0 +1,24 @@
+name: publish
+
+on: [push, workflow_dispatch]
+
+jobs:
+  publish-merger-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Build the facegame-server Docker Image
+        run: |
+          docker build . --tag ghcr.io/actionable-data-science/facegame:latest
+          docker run -d ghcr.io/actionable-data-science/facegame:latest
+          docker stop -t 30 $(docker ps -q)
+          docker push ghcr.io/actionable-data-science/facegame:latest

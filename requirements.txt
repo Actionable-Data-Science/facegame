@@ -1,0 +1,17 @@
+uuid1
+gunicorn
+wheel
+scikit-build
+cmake
+opencv-python
+python-dotenv
+urllib3
+matplotlib
+pylab-sdk
+numpy
+dlib
+joblib
+scipy
+scikit-image
+scikit-learn==0.24.1
+flask

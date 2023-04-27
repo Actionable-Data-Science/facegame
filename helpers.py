@@ -15,8 +15,7 @@ from dotenv import load_dotenv
 from base64 import urlsafe_b64decode, b64encode
 from werkzeug.utils import secure_filename
 
-
-load_dotenv()
+load_dotenv("facegame_data/.env")
 
 FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 USERS = ast.literal_eval(os.environ["USERS"]) 

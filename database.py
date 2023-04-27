@@ -11,7 +11,7 @@ from threading import Lock
 from werkzeug.utils import secure_filename
 from time import sleep
 
-load_dotenv()
+load_dotenv("facegame_data/.env")
 lock = Lock()
 
 AU_MODEL_ID = os.environ["AU_MODEL_ID"]
