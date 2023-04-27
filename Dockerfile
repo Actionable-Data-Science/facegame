@@ -18,4 +18,4 @@ from python as final
 
 COPY . .
 
-CMD ["python3", "main.py"]
+CMD ["gunicorn", "-w", "4", "wsgi:application", "--bind", "0.0.0.0:8000"]
