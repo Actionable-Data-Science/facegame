@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 import os
 
+print(os.listdir("facegame_data/"))
+
 load_dotenv("facegame_data/.env")
 
 FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]

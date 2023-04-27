@@ -17,7 +17,11 @@ lock = Lock()
 AU_MODEL_ID = os.environ["AU_MODEL_ID"]
 FACES_FOLDER_PATH = os.environ["FACES_FOLDER_PATH"]
 
-connection = sqlite3.connect("database/facegame.db", check_same_thread=False, timeout=2500)
+DATABASE_PATH = os.environ["DATABASE_PATH"]
+
+print(f"Database: ${DATABASE_PATH}")
+
+connection = sqlite3.connect(DATABASE_PATH, check_same_thread=False, timeout=2500)
 cursor = connection.cursor()
 
 def create_tables_if_not_exist():
