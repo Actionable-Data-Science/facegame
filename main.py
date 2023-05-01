@@ -161,7 +161,7 @@ def get_new_target_image():
     random_image_data = database.get_random_image_data(77777, False)
     random_filename = random_image_data[1].split("/")[-1]
     random_image_aus = ast.literal_eval(random_image_data[2])
-    with open("static/faces/" + random_filename, "rb") as image:
+    with open(FACES_FOLDER_PATH + random_filename, "rb") as image:
         random_image = base64.b64encode(image.read()).decode('ascii')
     return jsonify(targetAUs = random_image_aus, image = random_image)
 
