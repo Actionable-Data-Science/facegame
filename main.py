@@ -170,5 +170,11 @@ def get_image():
     image_name = request.args.get("image")
     return redirect("/" + FACES_FOLDER_PATH + image_name)
 
+@app.route('/facegame_data/faces/<filename>')
+def custom_static(filename):
+    print("request")
+    print("filename: ", filename)
+    return send_from_directory("facegame_data/faces/", filename)
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
