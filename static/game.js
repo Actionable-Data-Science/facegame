@@ -56,7 +56,7 @@ async function startRound() {
   heat.clear();
   ctxCanvasHeatmap.clearRect(0, 0, canvasHeatmap.width, canvasHeatmap.height);
   changeViewToActiveGame();
-  setNewImage(`static/faces/${currentGameplayData.imageName}`);
+  setNewImage(`getImage/?image=${currentGameplayData.imageName}`);
   countdown(5);
 }
 

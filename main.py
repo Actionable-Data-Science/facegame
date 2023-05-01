@@ -165,6 +165,10 @@ def get_new_target_image():
         random_image = base64.b64encode(image.read()).decode('ascii')
     return jsonify(targetAUs = random_image_aus, image = random_image)
 
+@app.route('/getImage/', methods=["GET"])
+def get_image():
+    image_name = request.args.get("image")
+    return redirect("/" + FACES_FOLDER_PATH + image_name)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
