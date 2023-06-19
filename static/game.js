@@ -1,206 +1,276 @@
-//jshint esversion:6
+const cameraSelect = document.getElementById("cameraSelect");
+const videoCanvas = document.getElementById("canvasPlayer");
+const videoHTML = document.getElementById("videoInput");
+const retryButton = document.getElementById("retryButton");
+const nextButton = document.getElementById("nextButton");
+const visualizationCanvas = document.getElementById("canvasTransparent");
+const targetImageCanvas = document.getElementById("canvasTargetImage");
 
-const canvasImage = document.getElementById("canvas-image");
-const ctxCanvasImage = canvasImage.getContext("2d");
-const timerElem = document.getElementById("timer");
+class TargetImageLoader {
+  constructor() {
+    this.currentImageData = null;
+    this.currentImageUrl = null;
+    this.currentActionUnits = null;
+    this.currentImageId = null;
+    this.currentSuccess = false;
 
-let currentGameplayData;
-let currentSessionId;
-let currentStatus;
+    this.nextImageData = null;
+    this.nextImageUrl = null;
+    this.nextActionUnits = null;
+    this.nextImageId = null;
+    this.nextSuccess = false;
+  }
 
-const displaySize = {
-  width: canvasSnapshot.width,
-  height: canvasSnapshot.height,
-};
+  async loadRandomTargetImage() {
+    this.currentImageData = this.nextImageData;
+    this.currentImageUrl = this.nextImageUrl;
+    this.currentActionUnits = JSON.parse(this.nextActionUnits);
+    this.currentImageId = this.nextImageId;
+    this.currentSuccess = this.nextSuccess;
 
-document.getElementById("new-game-btn").addEventListener("click", startNewGame);
-document.getElementById("retry-btn").addEventListener("click", retryGame);
+    this.nextImageData = null;
+    this.nextImageUrl = null;
+    this.nextActionUnits = null;
+    this.nextImageId = null;
+    this.nextSuccess = false;
 
-let isRunning = false;
+    const response = await fetch("/api/get_random_target_image");
+    const data = await response.json();
 
-faceapi.tf.ready();
-prepare();
+    if (data.success === false) {
+      return; // Error occurred
+    }
 
-async function main() {
-  getImageThenStart();
-}
+    this.nextSuccess = data.success;
+    this.nextActionUnits = data.action_units;
+    this.nextImageId = data.image;
 
-async function getImageThenStart() {
-  currentGameplayData = await getGameplayData();
-  startRound();
-}
-
-function changeViewToActiveGame() {
-  document.getElementById("error-msg").innerHTML = "";
-  document.getElementById("canvas-heatmap").style.display = "none";
-  document.getElementById("new-game-btn").disabled = true;
-  document.getElementById("retry-btn").disabled = true;
-  document.getElementById("timer").innerHTML = "";
-  document.getElementById("timer").style.display = "block";
-  document.getElementById("jaccard-score").innerHTML = "";
-  document.getElementById("canvas-snapshot").style.display = "none";
-  document.getElementById("prescription-table").innerHTML = "";
-  document.getElementById("canvas-video").style.display = "inline-block";
-}
-
-function changeViewToInactiveGame() {
-  document.getElementById("canvas-snapshot").style.display = "inline-block";
-  document.getElementById("canvas-heatmap").style.display = "inline";
-  document.getElementById("canvas-video").style.display = "none";
-  document.getElementById("new-game-btn").disabled = false;
-  document.getElementById("retry-btn").disabled = false;
-}
-
-async function startRound() {
-  isRunning = true;
-  heat.clear();
-  ctxCanvasHeatmap.clearRect(0, 0, canvasHeatmap.width, canvasHeatmap.height);
-  changeViewToActiveGame();
-  setNewImage(`getImage/?image=${currentGameplayData.imageName}`);
-  countdown(5);
-}
-
-async function finishRound() {
-  changeViewToInactiveGame();
-  const canvasVideo = document.getElementById("canvas-video");
-  ctxCanvasSnapshot.drawImage(canvasVideo, 0, 0);
-  const snapshot = canvasSnapshot.toDataURL("image/png");
-  const t0 = performance.now();
-  const actionUnitData = requestActionUnits(
-    snapshot,
-    currentGameplayData.gameplayId,
-    currentSessionId,
-    currentGameplayData.imageId,
-    false,
-    true
-  );
-  const detections = await faceapi
-    .detectSingleFace(canvasSnapshot)
-    .withFaceLandmarks();
-  const resizedDetections = faceapi.resizeResults(detections, displaySize);
-  const landmarks = resizedDetections.landmarks._positions;
-  actionUnitData.then((auData) => {
-    booked = [];
-    showScores(auData);
-    showHeatmap(
-      currentGameplayData.actionUnits,
-      auData.actionUnits,
-      canvasSnapshot
+    const imageResponse = await fetch(
+      `/api/get_target_image/${this.nextImageId}`
     );
-    drawAUs(
-      canvasSnapshot,
-      currentGameplayData.actionUnits,
-      auData.actionUnits,
-      landmarks,
-      false
-    );
-    const t1 = performance.now();
-    const timeToComplete = t1 - t0;
-    console.log(
-      "Time between image sent and AUs received: ",
-      timeToComplete,
-      "ms"
-    );
-  });
-  generateStatus(
-    snapshot,
-    currentGameplayData.gameplayId,
-    currentSessionId,
-    false
-  );
-}
+    const blob = await imageResponse.blob();
+    this.nextImageData = URL.createObjectURL(blob);
+  }
 
-function showScores(auData) {
-  document.getElementById("timer").style.display = "none";
-  if (auData.success) {
-    document.getElementById("jaccard-score").innerHTML =
-      "Score: " + Math.round(auData.jaccardIndex * 100) + "%";
-    document.getElementById("jaccard-score").style.display = "block";
-    document.getElementById("prescription-table").innerHTML =
-      generatePrescriptionTable(
-        auData.actionUnits,
-        currentGameplayData.actionUnits
-      );
-  } else {
-    document.getElementById("error-msg").innerHTML = auData.errorMessage;
-    document.getElementById("error-msg").style.display = "block";
+  getCurrentImageData() {
+    return this.currentImageData;
+  }
+
+  getCurrentActionUnits() {
+    return this.currentActionUnits;
+  }
+
+  getCurrentImageId() {
+    return this.currentImageId;
+  }
+
+  getCurrentSuccess() {
+    return this.currentSuccess;
   }
 }
 
-function startNewGame() {
-  if (isRunning === false) {
-    document.getElementById("timer").innerHTML = "Loading new image...";
-    getImageThenStart();
-  }
-}
+class Game {
+  _cam;
+  _retryButton;
+  _nextButton;
+  _visualizationCanvas;
+  _targetImageCanvas;
+  _targetImageLoader;
+  _targetImageCanvasContext;
+  _currentTargetActionUnits;
 
-function countdown(seconds) {
-  function tick() {
-    if (seconds === 0) {
-      timerElem.innerHTML = "Evaluating Action Units...";
-      isRunning = false;
-      finishRound();
-    } else {
-      timerElem.innerHTML = seconds;
-      seconds -= 1;
-      setTimeout(tick, 1000);
+  constructor(
+    retryButton,
+    nextButton,
+    visualizationCanvas,
+    cameraSelect,
+    videoCanvas,
+    videoHTML,
+    targetImageCanvas
+  ) {
+    this._cam = new Cam(cameraSelect, videoCanvas, videoHTML);
+    this._cam.detectCameras();
+    this._retryButton = retryButton;
+    this._nextButton = nextButton;
+    this._visualizationCanvas = visualizationCanvas;
+
+    this._targetImageCanvas = targetImageCanvas;
+    this._targetImageCanvasContext = targetImageCanvas.getContext("2d");
+    this._targetImageLoader = new TargetImageLoader();
+    this._targetImageLoader.loadRandomTargetImage().then(() => {
+      this._targetImageLoader.loadRandomTargetImage().then(() => {
+        this.initializeButtonListeners();
+      });
+    });
+  }
+
+  initializeButtonListeners() {
+    this._retryButton.addEventListener("click", () => this.retry());
+    this._nextButton.addEventListener("click", () => this.next());
+  }
+
+  async startNextRound() {
+    this._currentTargetActionUnits =
+      this._targetImageLoader.getCurrentActionUnits();
+    const currentImg = new Image();
+    currentImg.src = this._targetImageLoader.getCurrentImageData();
+    currentImg.onload = () => {
+      this._targetImageCanvasContext.drawImage(currentImg, 0, 0, 480, 360);
+    };
+    this._cam.resumeVideo();
+    const context = this._visualizationCanvas.getContext("2d");
+    context.clearRect(
+      0,
+      0,
+      this._visualizationCanvas.width,
+      this._visualizationCanvas.height
+    );
+    this._targetImageLoader.loadRandomTargetImage();
+  }
+
+  retry() {
+    this.startNextRound();
+    this.startCountdown(3);
+    setTimeout(() => this.endRound(), 3000);
+  }
+
+  next() {
+    this.startNextRound();
+    this.startCountdown(3);
+    setTimeout(() => this.endRound(), 3000);
+  }
+
+  endRound() {
+    const videoCanvas = document.getElementById("canvasPlayer");
+    const dataCollector = new DataCollector();
+    // Add the "flash-animation" class to the video canvas
+    videoCanvas.classList.add("flash-animation");
+
+    const image = this._cam.takeSnapshot();
+    dataCollector.setTargetImageId(this._targetImageLoader.getCurrentImageId());
+    image.onload = async () => {
+      const ouface = new OUFace(image, dataCollector);
+      const results = await ouface.withActionUnits().startDetection();
+      this.showResults(await results);
+    };
+
+    // Remove the "flash-animation" class after a short delay (e.g., 250ms)
+    setTimeout(() => {
+      videoCanvas.style.opacity = "0.5"; // Adjust the desired opacity value
+    }, 250);
+
+    // Gradually fade back to normal opacity over time (e.g., 500ms)
+    const animationDuration = 500; // Adjust the desired animation duration
+    const fadeInterval = 10; // Adjust the interval for opacity changes
+    let currentOpacity = 0.5; // Adjust the initial opacity value
+
+    const fadeIntervalId = setInterval(() => {
+      currentOpacity +=
+        (1 - currentOpacity) / (animationDuration / fadeInterval);
+      videoCanvas.style.opacity = currentOpacity.toString();
+
+      if (currentOpacity >= 0.99) {
+        clearInterval(fadeIntervalId);
+        videoCanvas.classList.remove("flash-animation");
+      }
+    }, fadeInterval);
+  }
+
+  showResults(results) {
+    try {
+      // console.log(results)
+      const fv = new FaceVisualizer(480, 360, results.landmarks._positions)
+        .visualizeActionUnitDifference(
+          results.actionUnits,
+          this._currentTargetActionUnits
+        )
+        .visualizeJaccardIndex(
+          results.actionUnits,
+          this._currentTargetActionUnits
+        )
+        .visualizeDetectedAUs(results.actionUnits)
+        .visualizeTargetAUs(this._currentTargetActionUnits)
+        .analyzeImageAnimation(this._visualizationCanvas);
+    } catch (e) {
+      console.log(e);
+      showFlashMessage();
     }
   }
-  setTimeout(tick, 1000);
+
+  startCountdown(seconds) {
+    // Calculate the countdown end time
+    var countdownEndTime = new Date().getTime() + seconds * 1000;
+
+    // Get the canvas element
+    var ctx = this._visualizationCanvas.getContext("2d");
+
+    // Update the countdown every second
+    var countdownInterval = setInterval(() => {
+      // Get the current date and time
+      var now = new Date().getTime();
+
+      // Find the distance between now and the countdown end time
+      var distance = countdownEndTime - now;
+
+      // Calculate time units
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      // If the countdown is finished, display a message
+      if (distance < 0) {
+        clearInterval(countdownInterval);
+        ctx.clearRect(
+          0,
+          0,
+          this._visualizationCanvas.width,
+          this._visualizationCanvas.height
+        );
+      } else if (distance < 300) {
+        ctx.clearRect(
+          0,
+          0,
+          this._visualizationCanvas.width,
+          this._visualizationCanvas.height
+        );
+      } else {
+        ctx.clearRect(
+          0,
+          0,
+          this._visualizationCanvas.width,
+          this._visualizationCanvas.height
+        );
+        ctx.font = "60px Arial";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.textAlign = "center";
+        ctx.fillText(
+          seconds + 1,
+          this._visualizationCanvas.width / 2,
+          this._visualizationCanvas.height / 3
+        );
+      }
+    }, 100);
+  }
 }
 
-function setNewImage(imagePath) {
-  const img = new Image();
-  img.src = imagePath;
-  img.onload = () => {
-    ctxCanvasImage.drawImage(img, 0, 0, canvasImage.width, canvasImage.height);
-  };
-}
+modelsLoaded.then((models) => {
+  const game = new Game(
+    retryButton,
+    nextButton,
+    visualizationCanvas,
+    cameraSelect,
+    videoCanvas,
+    videoHTML,
+    targetImageCanvas
+  );
+});
 
-async function retryGame() {
-  await getNewGameplayId(currentGameplayData.imageId);
-  startRound();
-}
+function showFlashMessage(message) {
+  const flashMessageContainer = document.getElementById(
+    "flashMessageContainer"
+  );
+  flashMessageContainer.innerHTML = message;
+  flashMessageContainer.style.display = "block";
 
-async function getGameplayData() {
-  const apiURL = `/api/getGameplayData?sessionId=${currentSessionId}`;
-  let res = await fetch(apiURL, {
-    method: "GET",
-  });
-  let json = await res.json();
-  return json;
-}
-
-async function sendStatusVector(
-  statusVector,
-  gameplayId,
-  sessionId,
-  isPreheat
-) {
-  const apiURL = "/api/uploadOnlineResults";
-  const data = {
-    statusVector: statusVector,
-    gameplayId: gameplayId,
-    sessionId: sessionId,
-    isPreheat: isPreheat,
-  };
-  let res = await fetch(apiURL, {
-    method: "POST",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  return;
-}
-
-async function getNewGameplayId(imageId) {
-  const apiURL = `/api/getNewGameplayId?imageId=${imageId}`;
-  let res = await fetch(apiURL, {
-    method: "GET",
-  });
-  await res.json().then((json) => {
-    currentGameplayData.gameplayId = json.gameplayId;
-  });
+  setTimeout(() => {
+    flashMessageContainer.style.display = "none";
+  }, 5000);
 }

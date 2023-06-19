@@ -1,0 +1,198 @@
+{% extends 'base.html' %} {% block content %}
+
+<style>
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  .overlay-content {
+    text-align: center;
+    color: white;
+  }
+
+  /* .blur-container {
+  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.7);
+  transition: backdrop-filter 0.5s ease;
+} */
+
+  .access-info {
+    color: white;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+</style>
+
+<div class="overlay" id="cameraOverlay">
+  <div class="overlay-content">
+    <h3>Camera Access Required</h3>
+    <p>Your browser has denied access to the camera.</p>
+    <p>Please enable camera access to continue.</p>
+    <p class="access-info">Instructions to enable camera:</p>
+    <ul class="access-info" style="text-align: left; padding-left: 0">
+      <li>
+        Chrome, Chromium, Brave, Edge: Click on the camera icon in the address
+        bar and select "Always allow" or "Allow".
+      </li>
+      <li>
+        Firefox: Click on the camera icon in the address bar and select "Allow".
+      </li>
+      <li>
+        Safari: Go to Safari Preferences > Websites > Camera, and select "Allow"
+        for the website.
+      </li>
+    </ul>
+    <p>You may have to reload the page afterwards.</p>
+  </div>
+</div>
+
+<div class="container blur-container" id="contentContainer">
+  <video
+    id="videoInput"
+    autoplay
+    style="display: none"
+    width="480"
+    height="360"
+  ></video>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="canvas-container" style="position: relative">
+        <canvas id="canvasPlayer" width="480" height="360"></canvas>
+        <canvas
+          id="canvasTransparent"
+          width="480"
+          height="360"
+          style="position: absolute; top: 0; left: 0; opacity: 0.7"
+        ></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <select name="Cameras" id="cameraSelect"></select>
+  </div>
+
+  <div class="container content">
+    <div class="row justify-content-center">
+      <!-- Added row and justify-content-center classes -->
+      <div class="col-md-6">
+        <!-- Added col-md-6 class -->
+        <div class="form-check form-switch mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="actionUnitsSwitch"
+          />
+          <label class="form-check-label text-white" for="actionUnitsSwitch">
+            Action Units
+          </label>
+        </div>
+        <div class="form-check form-switch mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="landmarksSwitch"
+          />
+          <label class="form-check-label text-white" for="landmarksSwitch">
+            Landmarks
+          </label>
+        </div>
+        <div class="form-check form-switch mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="boundingBoxSwitch"
+          />
+          <label class="form-check-label text-white" for="boundingBoxSwitch">
+            Bounding Box
+          </label>
+        </div>
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="ageSwitch" />
+          <label class="form-check-label text-white" for="ageSwitch">
+            Age
+          </label>
+        </div>
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="genderSwitch" />
+          <label class="form-check-label text-white" for="genderSwitch">
+            Gender
+          </label>
+        </div>
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="emotionSwitch" />
+          <label class="form-check-label text-white" for="emotionSwitch">
+            Emotion
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // JavaScript code to handle the overlay
+  document.addEventListener("DOMContentLoaded", function () {
+    const overlay = document.getElementById("cameraOverlay");
+    const contentContainer = document.getElementById("contentContainer");
+
+    // Function to run the remaining scripts
+    function runRemainingScripts() {
+      // Array of script URLs in the correct order
+      const scriptTags = [
+        "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.15.0/dist/tf.min.js",
+        "https://d3js.org/d3.v6.min.js",
+        "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.8/dist/face-api.js",
+        "https://cdn.jsdelivr.net/gh/felixboettger/cam-js-demo@main/static/cam.js",
+        "static/ouface.js",
+        "static/facevisualizer.js",
+        "static/mirror.js",
+      ];
+
+      // Load each script sequentially
+      function loadScript(index) {
+        if (index >= scriptTags.length) {
+          // All scripts have been loaded
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src = scriptTags[index];
+        script.onload = function () {
+          // Load the next script
+          loadScript(index + 1);
+        };
+
+        document.body.appendChild(script);
+      }
+
+      // Start loading the scripts
+      loadScript(0);
+    }
+
+    // Check if camera access is allowed
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(function () {
+        // Camera access allowed
+        overlay.style.display = "none";
+        contentContainer.classList.remove("blur-container");
+        runRemainingScripts();
+      })
+      .catch(function () {
+        // Camera access denied
+        overlay.style.display = "flex";
+        contentContainer.classList.add("blur-container");
+      });
+  });
+</script>
+{% endblock %}

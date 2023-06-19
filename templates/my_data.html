@@ -1,0 +1,123 @@
+<!-- DOESNT WORK YET -->
+
+{% extends 'base.html' %} {% block content %}
+<br />
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <h1 class="text-white text-center">My Images</h1>
+      <br />
+      <div id="flash-messages"></div>
+      <table
+        class="table table-dark table-striped table-bordered"
+        style="color: white"
+      >
+        <thead class="thead-dark">
+          <tr>
+            <th>Image ID</th>
+            <th>Preview</th>
+            <th>Detected AUs</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody class="tbody-dark">
+          {% for image in images %}
+          <tr>
+            <td>{{ image.id }}</td>
+            <td>
+              <img
+                src="/api/get_my_image/{{ image.id }}"
+                alt="Image"
+                class="img-thumbnail"
+              />
+            </td>
+            <td>{{image.action_units}}</td>
+            <td>
+              <a class="delete-my-image" data-my-image-id="{{ image.id }}"
+                >Delete</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $(".delete-my-image").click(function (e) {
+      console.log("CLICKED DELETE");
+      e.preventDefault();
+      var myImageId = $(this).data("my-image-id");
+      var confirmation = confirm(
+        "Are you sure you want to delete this target image?"
+      );
+      if (confirmation) {
+        var url = "/api/delete_my_image/" + myImageId;
+        $.ajax({
+          url: url,
+          type: "DELETE",
+          success: function (response) {
+            if (response.success) {
+              // Store success flash message in local storage
+              localStorage.setItem(
+                "flashMessage",
+                JSON.stringify({
+                  type: "success",
+                  message: "Image deleted successfully",
+                })
+              );
+            } else {
+              // Store warning flash message in local storage
+              localStorage.setItem(
+                "flashMessage",
+                JSON.stringify({
+                  type: "warning",
+                  message:
+                    "An error occurred while deleting your image. Please contact us!",
+                })
+              );
+            }
+            // Reload the page
+            location.reload();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error deleting your image:", error);
+            // Store error flash message in local storage
+            localStorage.setItem(
+              "flashMessage",
+              JSON.stringify({
+                type: "danger",
+                message:
+                  "An error occurred while deleting your image. Please contact us!",
+              })
+            );
+            // Reload the page
+            location.reload();
+          },
+        });
+      }
+    });
+
+    function showFlashMessage(type, message) {
+      var alertClass = "alert-" + type;
+      var flashMessage = $("<div>")
+        .addClass("alert " + alertClass)
+        .text(message);
+      $("#flash-messages").append(flashMessage);
+    }
+
+    // Retrieve and display flash message after page reload
+    var storedFlashMessage = localStorage.getItem("flashMessage");
+    if (storedFlashMessage) {
+      var flashMessage = JSON.parse(storedFlashMessage);
+      showFlashMessage(flashMessage.type, flashMessage.message);
+      // Remove flash message from local storage
+      localStorage.removeItem("flashMessage");
+    }
+  });
+</script>
+{% endblock %}

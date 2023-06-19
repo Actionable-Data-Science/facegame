@@ -1,0 +1,186 @@
+{% extends 'base.html' %} {% block content %}
+
+<style>
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  .overlay-content {
+    text-align: center;
+    color: white;
+  }
+
+  /* .blur-container {
+  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.7);
+  transition: backdrop-filter 0.5s ease;
+} */
+
+  .access-info {
+    color: white;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+</style>
+
+<div class="overlay" id="cameraOverlay">
+  <div class="overlay-content">
+    <h3>Camera Access Required</h3>
+    <p>Your browser has denied access to the camera.</p>
+    <p>Please enable camera access to continue.</p>
+    <p class="access-info">Instructions to enable camera:</p>
+    <ul class="access-info" style="text-align: left; padding-left: 0">
+      <li>
+        Chrome, Chromium, Brave, Edge: Click on the camera icon in the address
+        bar and select "Always allow" or "Allow".
+      </li>
+      <li>
+        Firefox: Click on the camera icon in the address bar and select "Allow".
+      </li>
+      <li>
+        Safari: Go to Safari Preferences > Websites > Camera, and select "Allow"
+        for the website.
+      </li>
+    </ul>
+    <p>You may have to reload the page afterwards.</p>
+  </div>
+</div>
+
+<div class="container blur-container" id="contentContainer">
+  <div class="mx-auto">
+    {% if current_user.is_authenticated and current_user.anonymous == false and
+    request.path == "/facegame_classic" or request.path == "/mirror" %}
+    <a
+      href="/account"
+      class="nav-link text-center"
+      style="color: {{ 'green' if current_user.data_sharing_allowed_status else 'red' }};"
+      >{{ "Helping Science (Change)" if current_user.data_sharing_allowed_status
+      else "Not Helping Science (Change)" }}</a
+    >
+    {% elif request.path == "/facegame_classic" or request.path == "/mirror" %}
+    <a
+      href="/register"
+      class="nav-link text-center"
+      style="color: {{ 'orange' }};"
+      >{{ "Sign up here and contribute to science." }}</a
+    >
+    {% endif %}
+  </div>
+
+  <div
+    id="flashMessageContainer"
+    class="alert alert-danger"
+    role="alert"
+    style="display: none"
+  >
+    Face not recognized
+  </div>
+  <video
+    id="videoInput"
+    autoplay
+    style="display: none"
+    width="480"
+    height="360"
+  ></video>
+  <div id="tempContainer"></div>
+  <div class="container">
+    <!-- KNOWN PROBLEM: CANVASES CAN OVERLAP -->
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="canvas-container">
+          <canvas id="canvasTargetImage" width="480" height="360"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="canvas-container" style="position: relative">
+          <canvas id="canvasPlayer" width="480" height="360"></canvas>
+          <canvas
+            id="canvasTransparent"
+            width="480"
+            height="360"
+            style="position: absolute; top: 0; left: 0; opacity: 0.7"
+          ></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <select name="Cameras" id="cameraSelect"></select>
+    </div>
+    <div class="button-container text-center mt-4">
+      <button class="btn btn-secondary" id="retryButton">
+        <i class="bi bi-arrow-repeat"></i> New Try
+      </button>
+      <button class="btn btn-primary me-2" id="nextButton">
+        <i class="bi bi-arrow-right-circle-fill"></i> Next Image
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // JavaScript code to handle the overlay
+  document.addEventListener("DOMContentLoaded", function () {
+    const overlay = document.getElementById("cameraOverlay");
+    const contentContainer = document.getElementById("contentContainer");
+
+    // Function to run the remaining scripts
+    function runRemainingScripts() {
+      // Array of script URLs in the correct order
+      const scriptTags = [
+        "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.8/dist/face-api.js",
+        "https://cdn.jsdelivr.net/gh/felixboettger/cam-js-demo@main/static/cam.js",
+        "static/ouface.js",
+        "static/facevisualizer.js",
+        "static/datacollector.js",
+        "static/game.js",
+      ];
+
+      // Load each script sequentially
+      function loadScript(index) {
+        if (index >= scriptTags.length) {
+          // All scripts have been loaded
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src = scriptTags[index];
+        script.onload = function () {
+          // Load the next script
+          loadScript(index + 1);
+        };
+
+        document.body.appendChild(script);
+      }
+
+      // Start loading the scripts
+      loadScript(0);
+    }
+
+    // Check if camera access is allowed
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(function () {
+        // Camera access allowed
+        overlay.style.display = "none";
+        contentContainer.classList.remove("blur-container");
+        runRemainingScripts();
+      })
+      .catch(function () {
+        // Camera access denied
+        overlay.style.display = "flex";
+        contentContainer.classList.add("blur-container");
+      });
+  });
+</script>
+
+{% endblock %}

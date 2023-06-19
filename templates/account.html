@@ -1,0 +1,113 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="text-center mb-4">Your Account</h1>
+          {% for message in get_flashed_messages() %}
+          <div
+            class="alert alert-warning alert-dismissible fade show"
+            role="alert"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {% endfor %}
+          <div class="mb-4">
+            <h5 class="card-title">Account Information</h5>
+            <hr />
+            <p class="card-text">
+              <strong>Username:</strong> {{ current_user.username }}
+            </p>
+            <p class="card-text">
+              <strong>Email:</strong> {{ current_user.email }}
+            </p>
+          </div>
+          <div class="mb-4">
+            <h5 class="card-title">Data Management</h5>
+            <hr />
+            <p class="card-text">
+              You have the right to request a copy of your data and to ask us
+              for deletion.
+            </p>
+            <div class="d-grid gap-2">
+              <a class="btn btn-success" href="/my_data">View my images</a>
+              <a class="btn btn-warning" href="/api/download_my_data"
+                >Download a copy of all data</a
+              >
+              <a class="btn btn-danger" href="#" onclick="confirmDelete()"
+                >Delete all my data</a
+              >
+            </div>
+          </div>
+          <div class="shadow p-3 bg-body rounded">
+            <form method="POST">
+              {{ form.hidden_tag() }}
+              <div class="form-group form-check">
+                {{ form.data_sharing_allowed(class="form-check-input",
+                id="dataSharingCheckbox") }}
+                <label class="form-check-label" for="dataSharingCheckbox">
+                  I want to contribute to science and agree to share my data. I
+                  have read and accept the
+                  <a href="{{ url_for('informed_consent') }}" target="_blank"
+                    >Informed Consent</a
+                  >.
+                </label>
+              </div>
+              <br />
+              {{ form.submit(class="btn btn-primary") }}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function confirmDelete() {
+    if (confirm("Are you sure you want to delete all your data?")) {
+      deleteData();
+    }
+  }
+
+  function deleteData() {
+    // Send a delete request to the API endpoint
+    fetch("/api/delete_my_data", {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Data successfully deleted
+          // Save success flag in local storage
+          localStorage.setItem("deleteSuccess", "true");
+        } else {
+          // Handle error response
+          response.json().then((data) => {
+            // Save error information in local storage
+            localStorage.setItem("deleteSuccess", "false");
+            localStorage.setItem("deleteError", JSON.stringify(data));
+          });
+        }
+        // Redirect to the /goodbye page
+        window.location.href = "/goodbye";
+      })
+      .catch((error) => {
+        // Handle fetch error
+        // Save error information in local storage
+        localStorage.setItem(
+          "deleteError",
+          JSON.stringify({ success: false, error: error })
+        );
+        // Redirect to the /goodbye page
+        window.location.href = "/goodbye";
+      });
+  }
+</script>
+{% endblock %}

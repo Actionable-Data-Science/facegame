@@ -1,0 +1,72 @@
+{% extends 'base.html' %} {% block content %}
+<style>
+  body {
+    background-color: #000;
+    color: #fff;
+  }
+
+  .form-check {
+    display: flex;
+    justify-content: center;
+  }
+
+  .form-check-row {
+    display: flex;
+    align-items: center;
+  }
+</style>
+
+<h1 class="mt-5" style="text-align: center">Upload Image</h1>
+
+<div id="preview-section" class="mt-5" style="display: none">
+  <h2 style="text-align: center">Image Preview</h2>
+  <div class="text-center">
+    <img
+      id="preview-image"
+      class="img-fluid"
+      alt="Preview"
+      style="max-width: 10cm; max-height: 10cm"
+    />
+  </div>
+</div>
+
+<form
+  id="upload-form"
+  action="/api/add_target_image/"
+  method="post"
+  enctype="multipart/form-data"
+  style="text-align: center"
+>
+  <div class="form-group mt-4">
+    <label for="image-input">Drag and drop an image or click to choose:</label>
+    <br />
+    <div class="custom-file">
+      <input
+        type="file"
+        class="custom-file-input"
+        id="image-input"
+        name="image"
+        accept=".png, .jpeg, .jpg"
+      />
+    </div>
+  </div>
+
+  <div id="checkboxes" class="form-group mt-4" style="text-align: center">
+    <!-- Your JavaScript code will generate the checkboxes here -->
+  </div>
+
+  <div
+    class="form-group mt-4"
+    id="add-button"
+    style="display: none; text-align: center"
+  >
+    <button type="submit" class="btn btn-primary">Add to Face Game</button>
+  </div>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.8/dist/face-api.js"></script>
+<script src="/static/ouface.js"></script>
+<script src="/static/add_to_facegame.js"></script>
+
+{% endblock %}

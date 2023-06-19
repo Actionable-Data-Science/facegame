@@ -1,0 +1,74 @@
+<!-- registration.html -->
+{% extends 'base.html' %} {% block content %}
+<br />
+<center>
+  <h1>The Registration Page</h1>
+</center>
+<br />
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  {{ message }}
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endfor %}
+
+<br />
+<div class="shadow p-3 mb-5 bg-body rounded">
+  <form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+      {{ form.username.label(class="form-label") }} {{
+      form.username(class="form-control") }}
+    </div>
+    <br />
+    <div class="form-group">
+      {{ form.email.label(class="form-label") }} {{
+      form.email(class="form-control") }}
+    </div>
+    <br />
+    <div class="form-group">
+      {{ form.password.label(class="form-label") }} {{
+      form.password(class="form-control") }}
+    </div>
+    <br />
+    <div class="form-group">
+      {{ form.password_confirm.label(class="form-label") }} {{
+      form.password_confirm(class="form-control") }}
+    </div>
+    <br />
+    <div class="form-group form-check">
+      {{ form.terms_of_service_accepted(class="form-check-input",
+      id="tosAcceptCheckbox") }}
+      <label class="form-check-label" for="tosAcceptCheckbox">
+        I have read and accept the
+        <a href="{{ url_for('terms_of_service') }}" target="_blank"
+          >Terms of Service</a
+        >
+      </label>
+      <!-- {{ form.terms_of_service_accepted.label(class="form-check-label", for="tosAcceptCheckbox") }} -->
+    </div>
+    <br />
+    <div class="form-group form-check">
+      {{ form.data_sharing_allowed(class="form-check-input",
+      id="dataSharingCheckbox") }}
+      <!-- {{ form.data_sharing_allowed.label(class="form-check-label", for="dataSharingCheckbox") }} -->
+      <label class="form-check-label" for="dataSharingCheckbox">
+        I want to contribute to science and agree to share my data. I have read
+        and accept the
+        <a href="{{ url_for('informed_consent') }}" target="_blank"
+          >Informed Consent</a
+        >.
+      </label>
+    </div>
+    <br />
+    {{ form.submit(class="btn btn-primary") }}
+  </form>
+</div>
+
+{% endblock %}

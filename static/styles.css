@@ -1,0 +1,56 @@
+.account-container {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  color: #333;
+}
+
+p {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  color: #555;
+}
+
+.alert {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.form-check-label {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
