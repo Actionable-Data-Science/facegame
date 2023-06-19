@@ -124,7 +124,7 @@ def register():
     return render_template("register.html", form=form)
 
 @app.route("/register_admin", methods=["GET", "POST"])
-# require_admin() turn this on when deploying
+@require_admin()
 def register_admin():
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -445,6 +445,7 @@ def informed_consent():
 if __name__ == "__main__":
     
     create_tables()
-    app.run(host="localhost", ssl_context="adhoc", debug=True)
+    app.run(host="localhost", debug=False)
     # app.run(host="localhost", debug=True)
     
+
