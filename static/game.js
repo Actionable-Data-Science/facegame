@@ -125,7 +125,6 @@ class Game {
       this._visualizationCanvas.width,
       this._visualizationCanvas.height
     );
-    this._targetImageLoader.loadRandomTargetImage();
   }
 
   retry() {
@@ -135,6 +134,7 @@ class Game {
   }
 
   next() {
+    this._targetImageLoader.loadRandomTargetImage();
     this.startNextRound();
     this.startCountdown(3);
     setTimeout(() => this.endRound(), 3000);
