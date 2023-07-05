@@ -914,6 +914,12 @@ class FaceVisualizer {
   }
 
   visualizeActionUnitDifference(actionUnits, targetActionUnits) {
+    //Make sure that score and visualization only show aus that could have been detected by our model
+    supported_target_aus = [1, 2, 4, 5, 6, 7, 9, 10, 12, 14, 15, 17, 18, 20, 23, 24, 25, 26, 28, 43]
+    intersection = set(targetActionUnits).intersection(supported_target_aus )
+    targetActionUnits = list(intersection)
+
+    
     if (!this._actionUnitOn) {
       this._actionUnitDifferenceOn = true;
     } else {
