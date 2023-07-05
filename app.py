@@ -1,5 +1,6 @@
 from flask import Flask, render_template, flash, request, redirect, url_for, abort, send_file, jsonify
 from flask_wtf import FlaskForm
+from flask_migrate import Migrate
 from datetime import datetime, date
 from database import db, Users, Gameplays, TargetImages, GameplayImages
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -28,6 +29,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///facegame.db"
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 # Flask Login
 login_manager = LoginManager()
